@@ -15,7 +15,7 @@
 +================================================================+
 
 #Fix rc.single; as of now it boots almost exactly the same as rc.multi - undeadpenguin
-!rc.interactive - undeadpenguin
+#rc.interactive - undeadpenguin // not tested, but it should work
 
 Parallel boot; Do not try to automatically sort out deps yet
 
@@ -32,14 +32,9 @@ Docs for:
  hotplug
  openssh
  vixie-cron
- net
+ !net - undeadpenguin
  // Any other daemons you guys feel like "porting"
 
-Make runlevel 5 boot to X
-
-Add a login_manager = "" variable to initconf.py.
-
-ncurses installer? At least an installer that prompts you. //
-seth , i will look into doing a ncures installer
+Make installer prompt you
 
 And of course, fix all the bugs you find!

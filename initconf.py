@@ -30,6 +30,27 @@ FONT = ""
 # Example: KEYMAP = "keymap name"
 KEYMAP = ""
 
+# Configure the network here
+# Set the loopback address
+# Leaving it as 127.0.0.1 is recommended
+LO = "lo 127.0.0.1"
+
+# Now configure devices
+# Each variable in the array will be considered one device
+# For example: DEVICES = [ "dhcp" ]
+# would make eth0 use DHCP
+# If you have multiple NIC's, see the initconf.py man page
+# To not use DHCP, set this to
+# DEVICES = [ "eth0 10.0.0.1 netmask 255.255.255.0 broadcast 10.0.0.255" ]
+# (of course, using your IP addresses)
+DEVICES = [ "dhcp" ]
+
+# Now say which interfaces to start on boot
+# Put a number in here
+# For example, to have eth0 and eth1 start, you would set it to
+# INTERFACES = [ 0, 1 ]
+INTERFACES = [ 0 ]
+
 # Set modules to load on boot here
 # Example: MODULES = [ "tulip", "i810_audio", "usb-storage" ]
 MODULES = [ "ide-scsi" ]
