@@ -31,7 +31,7 @@ if prelevel == 2:
 		print "\x1b[1;32mDONE\x1b[0m\n"
 		
 # If $PRELEVEL equals $N
-if prevlevel == N: 
+if prelevel == N: 
 	# Terminate all processes
 	system( "/sbin/killall5 -15 &> /dev/null" )
 	system( "/usr/bin/sleep 5" )
