@@ -16,32 +16,25 @@ from os import system,path
 # Import argv module
 from sys import argv
 
+interface_ = INTERFACES.keys()
+
 def start():
 	print "\x1b[1;36m>>>\x1b[0m Starting net:"
-	counter = 0
-	interface_ = INTERFACES.keys()
 	for interface in interface_:
-		print "Interface: "+interface
 		# If the interface is set to use DHCP
 		if INTERFACES[interface] == "dhcp":
-			print "Trying dhcp for device "+interface
 			system( "rm -f /etc/dhcpc/dhcpcd-"+interface+".{pid,cache} >/dev/null 2>&1" )
-			print "DHCPcd'ing it"
 			system( "/sbin/dhcpcd -t 10 -h "+HOSTNAME+" "+interface )
 		
 		# Otherwise... use ifconfig to start it
 		else:
-			print "Trying ifconfig for device "+interface
 			system( "/sbin/ifconfig "+interface )
-		counter = counter + 1
-	print "\x1b[1;32mDONE\x1b[0m"
 
 def stop():
 	print "\x1b[1;36m>>>\x1b[0m Stopping net:"
-	for interface in INTERFACES:
-		
+	for interface in interface_:
 		# If the interface is set to use DHCP
-		if interface == "dhcp":
+		if INTERFACES[interface] == "dhcp":
 
 			# If the interface was started using DHCP
 			if path.exists( "/etc/dhcpc/dhcpcd-"+interface+".pid" ):
@@ -54,7 +47,6 @@ def stop():
 		# Otherwise... use ifconfig to put it down
 		else:
 			system( "/sbin/ifconfig "+interface+" down" )
-	print "\x1b[1;32mDONE\x1b[0m"
 
 # If the argument is start
 if argv[1] == "start":

@@ -32,7 +32,7 @@ KEYMAP = ""
 
 # List interface to start on boot here
 # For example, it could be something like:
-# INTERFACES = [ lo, eth0, eth1 ]
+# INTERFACES = { "lo":"lo 127.0.0.1", "eth0":"dhcp", "eth1":"dhcp" }
 INTERFACES = { "lo":"lo 127.0.0.1", "eth0":"dhcp" }
 
 # Set modules to load on boot here
@@ -47,6 +47,11 @@ BACKUP = "yes"
 # Use their full path. Wildcards (*) may be used
 # Example: BACKUPS = [ "/etc/initconf", "/home/bob/important_file.txt" ]
 BACKUPS = [ "/etc/initconf", "/etc/fstab" ]
+
+# Forty-two supports loading processes parallely
+# After setting this to "yes", run the script paralellize
+# Set this to PARALLEL = "yes" to enable parallel process loading
+PARALLEL = "yes"
 
 # Now list services to start on boot
 # Use the name that its /etc/rc.d/ script uses
