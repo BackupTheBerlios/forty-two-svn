@@ -1,42 +1,62 @@
-#!/bin/bash
+#!/usr/bin/python
 #
 # /etc/rc.single: single-user startup script
+# I hope no one ever uses this
+# Copyright 2004 Forty-two <http://forty-two.berlios.de>
+# Released under a BSD licence
+#coded by sethgeekx86
+
+# Load python system modules
+from os import system
+from os import path
+
+#todo
+# xml part 19
+# line 55 , the error mesage , we could have it loop , try the script again.
+# line 39 , 51 , i not sure what N is and if it will work
+# line 26-37 i do not know where services is , sorry if the code looks have asked , i don't
+#know where it comes from
+
+#
+# Here is where we need to parse the XML from rc.conf
+# I dunno how to do that as of now...
 #
 
-# Load configuration
-. /etc/rc.conf
+
 
 if [ "$PREVLEVEL" = "2" ]; then
 	# Shutdown services
-	if [ "${SERVICES[*]}" ]; then
-		for service in "${SERVICES[@]}"; do
+	if ${SERVICES[*]}: then
+		
+		for service in "${SERVICES[@]}":
 			R_SERVICES=($service ${R_SERVICES[@]})
-		done
-		for service in "${R_SERVICES[@]}"; do
-			/etc/rc.d/$service stop &> /tmp/rc.$$
-			/usr/bin/logger -t $service -f /tmp/rc.$$
-			/bin/rm -f /tmp/rc.$$
-		done
-	fi
-fi
+		
+		for service in "${R_SERVICES[@]}" :
+			
+			system ( "/etc/rc.d/$service stop &> /tmp/rc.$$" )
+			system ( "/usr/bin/logger -t $service -f /tmp/rc.$$" )
+			system ( "/bin/rm -f /tmp/rc.$$" )
+		
+	
 
-if [ "$PREVLEVEL" != "N" ]; then
+# n?
+if prevlevel = N: 
 	# Terminate all processes
-	/sbin/killall5 -15 &> /dev/null
-	/usr/bin/sleep 5
-	/sbin/killall5 -9 &> /dev/null
+	system ( "/sbin/killall5 -15 &> /dev/null" )
+	system( "/usr/bin/sleep 5" )
+	system( "/sbin/killall5 -9 &> /dev/null" )
 
 	# Start device management daemon
-	/sbin/devfsd /dev
+	system( "/sbin/devfsd /dev" )
 
 	# Start log daemons
-	/usr/sbin/syslogd
-	/usr/sbin/klogd -c 4
-fi
+	system( "/usr/sbin/syslogd" )
+	system( "/usr/sbin/klogd -c 4" )
 
-if [ "$RUNLEVEL" = "1" ]; then
-	# Enter single-user mode
-	exec /sbin/init -t1 S
-fi
+# Enter single-user mode , if runlevel is = to 1
+if runlevel == 1:
+ system( "exec /sbin/init -t1 S" )
+else:
+print "error"
 
 # End of file

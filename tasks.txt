@@ -7,8 +7,10 @@
 !rc - undeadpenguin // No more XML - at least not for the first version - it should be done by tonight
 !rc.conf - undeadpenguin // Have to re-write it for non-XML
 !rc.multi - undeadpenguin // Done for the most part... I still need to parse the XML, though...
-!rc.shutdown  seth // i will give it a try!
-!rc.single - seth
+!rc.shutdown  seth // some part will need to be fixed when we code 
+runlevle , ete.
+
+!rc.single - //seth done , there are a few issue , see todo
 #inittab - undeadpenguin // DONE
 rc.d/crond
 rc.d/inetd
