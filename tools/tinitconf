@@ -1,0 +1,121 @@
+#!/usr/bin/python
+#
+# Forty-two and a Half - Text configuration program for Forty-two
+# Copyright 2004 Forty-two <http://forty-two.berlios.de
+# Released under a BSD license
+# Editors: undeadpenguin
+#
+
+# Import system module
+from os import system
+
+# Import path module
+from os import path
+
+# Set some variables
+HOME = system( "/bin/echo $HOME" )
+system( "/usr/bin/clear" )
+
+print "\x1b[1;34mForty-two and a Half!\x1b[0m"
+print "\x1b[1;36mConfiguration program for Forty-two (init scripts)\x1b[0m\n"
+print "You will now be instructed through a series of prompts to configure the init scripts."
+print "The configuration file - initconf.py - will be outputted to your home directory."
+print "Press ENTER to continue."
+# Wait for the user to hit Enter
+tmp = raw_input()
+system( "/usr/bin/clear" )
+
+# Get the timezone
+print "You will now enter your timezone."
+tmp = raw_input( "Would you like to see all timezones?[y] " )
+if tmp != "y" and tmp != "y":
+	TIMEZONE = raw_input( "Timezone: " )
+else:
+	system( "/bin/ls /usr/share/zoneinfo" )
+	TIMEZONE = raw_input( "Timezone: " )
+print "Timezone set to",TIMEZONE
+
+# Get the hostname
+print "Now enter your hostname, short form."
+print "In 'foo.bar', it would just be 'foo'."
+HOSTNAME = raw_input( "Hostname: " )
+print "Hostname set to",HOSTNAME
+
+# Get the font
+tmp = raw_input( "Do you require a special console font?[n] " )
+if tmp != "y" and tmp != "yes":
+	print "No font being set."
+	FONT = ""
+else:
+	FONT = raw_input( "Console font: " )
+	print "Console font set to",FONT
+
+# Get keymap
+tmp = raw_input( "Do you require a special keymap?[n] " )
+if tmp != "y" and tmp != "yes":
+	print "No keymap being set."
+	KEYMAP = ""
+else:
+	KEYMAP = raw_input( "Keymap: " )
+	print "Keymap set to",KEYMAP
+
+# Get modules
+print "Now input modules to be loaded at boot."
+print "Input one at a time. Hit enter after each one."
+print "After you've input each module, type 'done' (without quotes)."
+print "Modules will be loaded in the order you put them in."
+MODULES = []
+while tmp != "done":
+	tmp = raw_input( "Module name: " )
+	if tmp != "done":
+		MODULES += [ ""+tmp+"" ]
+
+print "Modules:"
+for module in MODULES:
+	print " "+module
+	
+# Enable backups?
+print "Forty-two supports optionally backing up files to /var/backup on boot."
+print "To disable this, type 'n' here."
+BACKUP = raw_input( "Backup?[y] " )
+if BACKUP != "n" and BACKUP != "no":
+	print "Backing up enabled."
+	BACKUP = "yes"
+	# Now get the files to back up
+	print "Now, put in the full path to the files you would like to back up."
+	print "Wildcards (*) are allowed."
+	print "Type each one in at a time, hitting ENTER after every one."
+	print "When you're finished, type 'done'."
+	BACKUPS = []
+	tmp = ""
+	while tmp != "done":
+		tmp = raw_input( "File path: ")
+		if tmp != "done":
+			BACKUPS += [ ""+tmp+"" ]
+		
+	print "Files to be backed up:"
+	for file in BACKUPS:
+		print " "+file
+
+else:
+	print "Backing up disabled."
+	BACKUP = ""
+
+# Daemons
+print "Please put the daemons you would like to have load on boot here."
+print "One per line, hit ENTER after each one."
+print "When you're finished, type 'done'."
+tmp = ""
+DAEMONS = []
+while tmp != "done":
+	tmp = raw_input( "Daemon: " )
+	location = "/etc/rc.d/"+tmp
+	if path.exists( location ):
+		DAEMONS += [ ""+tmp+"" ]
+
+print "Daemons to be loaded:" 
+for service in DAEMONS:
+	print " Daemon:",service
+
+# End of file
+#
