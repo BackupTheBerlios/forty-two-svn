@@ -61,15 +61,8 @@ print "\x1b[1;32mDONE\x1b[0m\n"
 system ( "/bin/mount -n -o remount,ro /" )
 
 # Power off or reboot
-runlevel = system( "/bin/echo $RUNLEVEL" )
-if runlevel == 0:
- system( "/sbin/poweroff -d -f -i" )
 
-elif runlevel == 6:
- system( "/sbin/reboot -d -f -i" )
- 
-else:
- system( "/sbin/reboot -d -f -i" )
+system( "if [ $RUNLEVEL -eq 0 ]; then /sbin/poweroff -d -f -i; else /sbin/reboot -d -f -i; fi" )
 
 # End of file
 #
