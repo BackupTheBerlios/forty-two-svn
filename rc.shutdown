@@ -5,9 +5,9 @@
 # Released under a BSD licence
 # coded by sethgeekx86
 
-#todo
-#1 figure out a way to make a runlevel script , line 64-68
-#2 figure prelevel , and all that other stuff for the big 27-41
+#todo:
+# Finished :)
+#
 
 # Load python system modules
 from os import system
@@ -15,29 +15,29 @@ from os import path
 
 
 # Load configuration   
-system( ". /etc/rc.conf" )
+#
+# Here we would have to parse rc.conf's XML
+#
 
 # Set linefeed mode to avoid staircase effect
 system( "/bin/stty onlcr" )
 
 
 
-print "The system is shuting down.  Please wait......\n"
+print "The system is shuting down.  Please wait...\n"
 
 ######################################################################
-if [ "$PREVLEVEL" = "2" ]; then
-	# Shutdown services
-	if [ "${SERVICES[*]}" ]; then
-		for service in "${SERVICES[@]}"; do
-			R_SERVICES=($service ${R_SERVICES[@]})
-		done
-		for service in "${R_SERVICES[@]}"; do
-			/etc/rc.d/$service stop &> /tmp/rc.$$
-			/usr/bin/logger -t $service -f /tmp/rc.$$
-			/bin/rm -f /tmp/rc.$$
-		done
-	fi
-fi
+# Shutdown services
+if services != "":
+	for daemon in services:
+		print "Stopping",daemon,"\n"
+		tmp = "/etc/rc.d/"+daemon,"stop &> /tmp/rc.$$"
+		system( tmp )
+		tmp = "/usr/bin/logger -t",daemon,"-f /tmp/rc.$$"
+		system( tmp )
+		system( /bin/rm -f /tmp/rc.$$ )
+
+		
 ################################################################################
 # Terminate all processes
 system ( "/sbin/killall5 -15 &> /dev/null" )
