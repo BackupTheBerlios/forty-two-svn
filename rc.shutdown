@@ -62,7 +62,7 @@ system ( "/bin/mount -n -o remount,ro /" )
 
 # Power off or reboot
 runlevel = system( "/bin/echo $RUNLEVEL" )
-if runlevel == 2:
+if runlevel == 0:
  system( "/sbin/poweroff -d -f -i" )
 else:
  system( "/sbin/reboot -d -f -i" )
