@@ -27,7 +27,7 @@ if initconf.daemons != "":
 	for daemon in initconf.daemons:
 		print "Starting",daemon+"... "
 		# Make sure there's a script for it
-		tmplocation = "/etc/rc.d/",daemon
+		tmplocation = "/etc/rc.d/"+daemon
 		location = path.exists( tmplocation )
 		if location:
 			# Start the daemon
