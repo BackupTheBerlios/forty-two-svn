@@ -14,7 +14,8 @@
 |                                                                |
 +================================================================+
 
-!Fix rc.single; as of now it boots almost exactly the same as rc.multi - undeadpenguin
+#Fix rc.single; as of now it boots almost exactly the same as rc.multi - undeadpenguin
+!rc.interactive - undeadpenguin
 
 Parallel boot; Do not try to automatically sort out deps yet
 

@@ -7,20 +7,21 @@
 #  1(S)	Single-user
 #  2	Unused
 #  3	Multi-user startup
-#  4	Unused
-#  5	Unused - For X, just add a login manager as the last daemon to load
+#  4	Interactive boot - 2 VTs launched
+#  5	Multi-user with X
 #  6	Reboot
 
 id:3:initdefault:
 rc::sysinit:/etc/rc
 rs:S1:wait:/etc/rc.single
-rm:3:wait:/etc/rc.multi
+ri:4:wait:/etc/rc.interactive
+rm:35:wait:/etc/rc.multi
 rd:06:wait:/etc/rc.shutdown
 su:S:wait:/sbin/sulogin -p
 
-c1:13:respawn:/sbin/agetty 38400 vc/1 linux
-c2:3:respawn:/sbin/agetty 38400 vc/2 linux
-c3:3:respawn:/sbin/agetty 38400 vc/3 linux
+c1:S134:respawn:/sbin/agetty 38400 vc/1 linux
+c2:34:respawn:/sbin/agetty 38400 vc/2 linux
+c3:34:respawn:/sbin/agetty 38400 vc/3 linux
 c4:3:respawn:/sbin/agetty 38400 vc/4 linux
 c5:3:respawn:/sbin/agetty 38400 vc/5 linux
 c6:3:respawn:/sbin/agetty 38400 vc/6 linux

@@ -1,0 +1,86 @@
+#!/usr/bin/python
+#
+# /etc/rc.interactive - Interactive startup script (runlevel 3)
+# Copyright 2004 Forty-two <http://forty-two.berlios.de>
+# Released under a BSD license
+# 
+# Version 0.1 - Works and is pretty :)
+#
+# Editors: undeadpenguin
+#
+
+# Load system module
+from os import system
+
+# Load path module
+from os import path
+
+# Import variables from /etc/initconf.py
+from initconf import *
+
+
+# Tell them you're entering Interactive Mode
+print "\x1b[1;31mENTERING INTERACTIVE MODE\x1b[0m"
+print "...in 5"
+count = 4
+while count >= 1:
+	print count
+	system( "/usr/bin/sleep 1s" )
+	count = count - 1
+system( "/usr/bin/clear" )	
+
+# Have them interactively start daemons	
+if DAEMONS[0] != "":
+	print "\x1b[1;37m>>\x1b[0m You will now pick which services to start:"
+	for daemon in DAEMONS:
+		tmp = "Start "+daemon+"?[n] "
+		startit = raw_input( tmp )
+		if startit == "y":
+			# Make sure there's a script for it
+			tmplocation = "/etc/rc.d/"+daemon
+			location = path.exists( tmplocation )
+				if location:
+				# Start the daemon
+				tmp = "/etc/rc.d/"+daemon+" start"
+				system( tmp )
+		else:
+			print "\x1b[1;31mERROR: No service",daemon+"!\x1b[0m\n"
+print "\x1b[1;32mDONE\x1b[0m\n"
+
+# Run the user's local script (if it exists)
+tmp = path.exists( "/etc/rc.local" )
+if tmp:
+	startit = raw_input( "Execute /etc/rc.local?[n] " )
+	if startit == "y":
+		system( "/bin/bash /etc/rc.local" )
+
+# Backup files if necessary
+startit = raw_input( "Backup select files to /var/backup?[n] " )
+if startit == "y":
+	if BACKUPS != "":
+		print "\x1b[1;37m>>\x1b[0m Backing up files:"
+		for file in BACKUPS:
+			tmp = "Back up "+file+"?[n] "
+			startit = raw_input( tmp )
+			if startit == "y":
+				tmp = "cp "+file+" /var/backup"
+				system( tmp )
+	else:		   
+		# No, it's not a typo; 31 is red
+		print "\x1b[1;31mERROR: No backups defined in /etc/initconf.py!\x1b[0m"
+
+print "\x1b[1;32mDONE\x1b[0m"
+
+# Start login manager ?
+if LOGIN_MANAGER != "":
+	tmp = "Start "+LOGIN_MANAGER+"?[n] "
+	startit = raw_input ( tmp )
+	if startit == "y":
+		tmp = "/etc/rc.d/"+LOGIN_MANAGER+" start"
+
+system( "/usr/bin/clear" )
+print "\x1b[1;37mPynux v0.01 - Booted by Forty-two\x1b[0m"
+print "\x1b[1;37mWelcome to",HOSTNAME+"!\x1b[0m" 
+
+# End of file
+#
