@@ -4,7 +4,11 @@
 #Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD licence
 # coded by sethgeekx86
-# Load the system module
+
+#todo
+#1 figure out a way to make a runlevel script , line 64-68
+#2 figure prelevel , and all that other stuff for the big 27-41
+
 # Load python system modules
 from os import system
 from os import path
@@ -20,6 +24,7 @@ system( "/bin/stty onlcr" )
 
 print "The system is shuting down.  Please wait......\n"
 
+######################################################################
 if [ "$PREVLEVEL" = "2" ]; then
 	# Shutdown services
 	if [ "${SERVICES[*]}" ]; then
@@ -33,7 +38,7 @@ if [ "$PREVLEVEL" = "2" ]; then
 		done
 	fi
 fi
-
+################################################################################
 # Terminate all processes
 system ( "/sbin/killall5 -15 &> /dev/null" )
 system ( "/usr/bin/sleep 5" )
@@ -58,10 +63,9 @@ system ( "/bin/umount -a" )
 system ( "/bin/mount -n -o remount,ro /" )
 
 # Power off or reboot
-if [ "$RUNLEVEL" = "0" ]; then
-	/sbin/poweroff -d -f -i
-else
-	/sbin/reboot -d -f -i
-fi
+if runlevel == 2:
+ system( "/sbin/poweroff -d -f -i" )
+else:
+ system( "/sbin/reboot -d -f -i" )
 
-# End of file
+# End of script!
