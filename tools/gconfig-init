@@ -1,11 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # GTK+ >= 2.0 configuration utility for Forty-two (init scripts)
 #
-# Editors: undeadpenguin
 
-
-# Import everything
 import pygtk
 pygtk.require( "2.0" )
 import gtk
@@ -20,6 +17,8 @@ BACKUPS = [ "" ]
 DAEMONS = [ "" ]
 HOSTNAME = [ "" ]
 INTERFACES = { "":"" }
+modules = [ "" ]
+modules[0] = gtk.Label( "ide-scsi" )
 
 class MainWindow:
 	
@@ -28,59 +27,322 @@ class MainWindow:
 		gtk.main_quit()
 		return gtk.FALSE
 
+	# Used to destroy child windows
+	def second_destroy( self, widget, event, data="Help" ):
+		if data == "Help":
+			self.help_window.destroy()
+		elif data == "filesel1":
+			self.filesel1.destroy()
+
+	def help( self, widget, data="Begin" ):
+		
+		# Create the help window
+		self.help_window = gtk.Window( gtk.WINDOW_TOPLEVEL )
+		self.help_window.set_border_width( 5 )
+		self.help_window.connect( "delete_event", self.second_destroy, "Help" )
+		
+		# Create vbox to hold the contents
+		self.help_vbox = gtk.VBox( gtk.FALSE, 5 )
+		self.help_window.add( self.help_vbox )
+		
+		if data == "Begin":
+			self.help_para1 = gtk.Label( "You can either click 'Forward' to continue, click on one of the tabs to skip to that particular step, or click cancel to quit the program (no changes will be made to your system if you do this)." )
+			self.help_para1.set_line_wrap( gtk.TRUE )
+			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
+			self.help_para1.show()
+
+		elif data == "Basic Settings":
+			self.help_para1 = gtk.Label( "Put your timezone here. If you require a special keymap or font you may optionally put it here - if you don't, just leave them blank. Hitting 'Open' will display a list of all fonts, keymaps, or timezones." )
+			self.help_para1.set_line_wrap( gtk.TRUE )
+			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
+			self.help_para1.show()
+		elif data == "Kernel Modules":
+			self.help_para1 = gtk.Label( "Set kernel modules to be loaded on boot here. To add a module, click 'Add' and input the modules name. To remove a module that you've already added, click remove and select the module you wish to remove. WARNING: Modules may have dependencies! Make sure you have a modules dependencies load before it!" )
+			self.help_para1.set_line_wrap( gtk.TRUE )
+			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
+			self.help_para1.show()
+
+		# Create the close button
+		self.help_close = gtk.Button( "Close", gtk.STOCK_CLOSE )
+		self.help_close.connect( "clicked", self.second_destroy, "Help" )
+		self.help_vbox.pack_start( self.help_close )
+
+		# Show everything
+		self.help_close.show()
+		self.help_vbox.show()
+		self.help_window.show()
+
+	# Moves forward a page
+	def move_forward( self, widget, data="Basic Settings" ):
+		if data == "Basic Settings":
+			self.main_notebook.set_current_page( 1 )
+		elif data == "Kernel Modules":
+			self.main_notebook.set_current_page( 2 )
+
+	# Called when 'Open' is clicked
+	def open_file( self, widget, data ):
+
+		# Make the fileselection
+		if data == "timezone":
+			self.filesel1 = gtk.FileSelection( "Timezones" )
+			self.filesel1.set_filename( "/usr/share/zoneinfo/" )
+			self.filesel1.ok_button.connect( "clicked", self.ok_action, "timezone" )
+		elif data == "font":
+			self.filesel1 = gtk.FileSelection( "Fonts" )
+			self.filesel1.set_filename( "/usr/share/kbd/consolefonts/" )
+			self.filesel1.ok_button.connect( "clicked", self.ok_action, "font" )
+		elif data == "keymap":
+			self.filesel1 = gtk.FileSelection( "Keymaps" )
+			self.filesel1.set_filename( "/usr/share/kbd/keymaps/" )
+			self.filesel1.ok_button.connect( "clicked", self.ok_action, "keymap" )
+
+		self.filesel1.cancel_button.connect( "clicked", self.second_destroy, "filesel1" )
+		self.filesel1.show()
+
+	# Called from open_file() to put selected name in entry
+	def ok_action( self, widget, data="timezone" ):
+		
+		# Get the filename
+		filename = self.filesel1.get_filename()
+		
+		if data == "timezone":
+			self.basic_set_tzone_entry.set_text( filename )
+
+		elif data == "font":
+			self.basic_set_font_entry.set_text( filename )
+		elif data == "keymap":
+			self.basic_set_kmap_entry.set_text( filename )
+
+	 	# Close fileselection box
+		self.second_destroy( "delete_event", self.filesel1, "filesel1" )
+
+	# Called from 'Kernel Modules'... opens an 'Add Module' dialog
+	def add_module( self, widget ):
+
+		# Create a new window
+		self.addwindow = gtk.Window( gtk.WINDOW_TOPLEVEL )
+		self.addwindow.set_title( "Add Module" )
+		self.addwindow.connect( "delete_event", self.second_destroy, "Add Module" )
+
+		# Create the vbox to hold everything
+		self.add_vbox = gtk.VBox( gtk.FALSE, 10 )
+		self.addwindow.add( self.add_vbox )
+
+		# Create the hboxes
+		self.add_hbox1 = gtk.HBox( gtk.FALSE, 10 )
+		self.add_hbox2 = gtk.HBox( gtk.FALSE, 10 )
+
+		# Create everything needed
+		self.add_mod_label = gtk.Label( "Module name:" )
+		self.add_mod_entry = gtk.Entry( 0 )
+		self.add_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.add_apply = gtk.Button( "Apply", gtk.STOCK_APPLY )
+
+		# Add them to their boxes
+		self.add_hbox1.pack_start( self.add_mod_label, gtk.FALSE, gtk.FALSE, 10 )
+		self.add_hbox1.pack_start( self.add_mod_entry, gtk.FALSE, gtk.FALSE, 10 )
+		self.add_hbox2.pack_start( self.add_cancel, gtk.FALSE, gtk.FALSE, 10 )
+		self.add_hbox2.pack_end( self.add_apply, gtk.FALSE, gtk.FALSE, 10 )
+
+		# Show everything
+		self.add_mod_label.show()
+		self.add_mod_entry.show()
+		self.add_cancel.show()
+		self.add_apply.show()
+		self.add_hbox1.show()
+		self.add_hbox2.show()
+		self.add_vbox.show()
+		self.addwindow.show()
+
+	# Creates the notebook
+	def notebook_create( self ):
+
+		# Create the notebook
+		self.main_notebook = gtk.Notebook()
+		self.main_notebook.set_tab_pos( gtk.POS_TOP )
+		self.window1.add( self.main_notebook )
+
+		# Create widgets to be used throughout the program
+		self.gconfig_image = gtk.Image()
+		self.gconfig_image.set_from_file( "imgs/gconfig-init.png" )
+		self.cancel_button = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.cancel_button.connect( "clicked", self.delete_event, "cancel" )
+		self.forward_button = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+		self.help_button = gtk.Button( "Help", gtk.STOCK_HELP )
+
+		#####################
+		# Stuff for 'Begin' #
+		#####################
+
+		# Create stuff for 'Begin'
+		self.begin_table = gtk.Table( 3, 4, gtk.FALSE )
+		self.begin_table.set_row_spacings( 10 )
+		self.begin_table.set_col_spacings( 5 )
+		self.begin_label = gtk.Label( "Begin" )
+		self.begin_body = gtk.Label( "Welcome to gConfig-Init. This program will help you to configure your init scripts, telling your system what to do at boot. You will be prompted before any changes are made to your system. You may hit 'Cancel' any time before that to quit the program and discard all changes." )
+		self.begin_body.set_line_wrap( gtk.TRUE )
+		self.help_button.connect( "clicked", self.help, "Begin" )
+		self.forward_button.connect( "clicked", self.move_forward, "Basic Settings" )
+
+
+		# Add everything to the table
+		self.begin_table.attach( self.gconfig_image, 0, 4, 0, 1 )
+		self.begin_table.attach( self.begin_body, 1, 3, 1, 2 )
+		self.begin_table.attach( self.cancel_button, 0, 1, 2, 3 )
+		self.begin_table.attach( self.help_button, 1, 2, 2, 3 )
+		self.begin_table.attach( self.forward_button, 3, 4, 2, 3 )
+
+		# Add the table to the notebook
+		self.main_notebook.insert_page( self.begin_table, self.begin_label, 0 )
+
+		# Show everything
+		self.begin_label.show()
+		self.gconfig_image.show()
+		self.begin_body.show()
+		self.cancel_button.show()
+		self.help_button.show()
+		self.forward_button.show()
+		self.begin_table.show()
+		self.main_notebook.show()
+		
+		#########################
+		# End stuff for 'Begin' #
+		#########################
+
+		##############################
+		# Stuff for 'Basic Settings' #
+		##############################
+
+		# Create stuff for 'Basic Settings'
+		self.basic_set_table = gtk.Table( 5, 4, gtk.FALSE )
+		self.basic_set_table.set_row_spacings( 10 )
+		self.basic_set_table.set_col_spacings( 5 )
+		self.basic_set_label = gtk.Label( "Basic Settings" )
+		self.basic_set_timezone = gtk.Label( "Timezone:" )
+		self.basic_set_font = gtk.Label( "Font:" )
+		self.basic_set_keymap = gtk.Label( "Keymap:" )
+		self.basic_set_tzone_entry = gtk.Entry( 0 )
+		self.basic_set_font_entry = gtk.Entry( 0 )
+		self.basic_set_kmap_entry = gtk.Entry( 0 )
+		self.basic_set_tzone_open = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.basic_set_tzone_open.connect( "clicked", self.open_file, "timezone" )
+		self.basic_set_font_open = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.basic_set_font_open.connect( "clicked", self.open_file, "font" )
+		self.basic_set_kmap_open = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.basic_set_kmap_open.connect( "clicked", self.open_file, "keymap" )
+		self.basic_set_help = gtk.Button( "Help", gtk.STOCK_HELP )
+		self.basic_set_help.connect( "clicked", self.help, "Basic Settings" )
+		self.basic_set_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.basic_set_cancel.connect( "clicked", self.delete_event, "Destroy" )
+		self.basic_set_forward = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+		self.basic_set_forward.connect( "clicked", self.move_forward, "Kernel Modules" )
+		self.basic_set_image = gtk.Image()
+		self.basic_set_image.set_from_file( "imgs/gconfig-init.png" )
+
+		# Add everything to the table
+		self.basic_set_table.attach( self.basic_set_image, 0, 5, 0, 1 )
+		self.basic_set_table.attach( self.basic_set_timezone, 0, 1, 1, 2 )
+		self.basic_set_table.attach( self.basic_set_tzone_entry, 1, 3, 1, 2 )
+		self.basic_set_table.attach( self.basic_set_tzone_open, 3, 4, 1, 2 )
+		self.basic_set_table.attach( self.basic_set_font, 0, 1, 2, 3 )
+		self.basic_set_table.attach( self.basic_set_font_entry, 1, 3, 2, 3 )
+		self.basic_set_table.attach( self.basic_set_font_open, 3, 4, 2, 3 )
+		self.basic_set_table.attach( self.basic_set_keymap, 0, 1, 3, 4 )
+		self.basic_set_table.attach( self.basic_set_kmap_entry, 1, 3, 3, 4 )
+		self.basic_set_table.attach( self.basic_set_kmap_open, 3, 4, 3, 4 )
+		self.basic_set_table.attach( self.basic_set_cancel, 0, 1, 4, 5 )
+		self.basic_set_table.attach( self.basic_set_help, 1, 3, 4, 5 )
+		self.basic_set_table.attach( self.basic_set_forward, 3, 4, 4, 5 )
+
+		# Add table to notebook
+		self.main_notebook.insert_page( self.basic_set_table, self.basic_set_label, 1 )
+		
+		# Show everything
+		self.basic_set_label.show()
+		self.basic_set_image.show()
+		self.basic_set_timezone.show()
+		self.basic_set_font.show()
+		self.basic_set_keymap.show()
+		self.basic_set_tzone_entry.show()
+		self.basic_set_font_entry.show()
+		self.basic_set_kmap_entry.show()
+		self.basic_set_tzone_open.show()
+		self.basic_set_font_open.show()
+		self.basic_set_kmap_open.show()
+		self.basic_set_help.show()
+		self.basic_set_cancel.show()
+		self.basic_set_forward.show()
+		self.basic_set_table.show()
+
+		##################################
+		# End stuff for 'Basic Settings' #
+		##################################
+
+		####################################
+		# Start stuff for 'Kernel Modules' #
+		####################################
+		
+		# Create everything it'll need
+		self.kernel_mods_table = gtk.Table( 4, 3, gtk.TRUE )
+		self.kernel_mods_table.set_col_spacings( 5 )
+		self.kernel_mods_table.set_row_spacings( 10 )
+		self.kernel_mods_label = gtk.Label( "Kernel Modules" )
+		self.kernel_mods_main = gtk.Label( "Modules to be loaded:" )
+		self.kernel_mods_vbox = gtk.VBox( gtk.FALSE, 3 )
+		self.kernel_mods_add_button = gtk.Button( "Add", gtk.STOCK_ADD )
+		self.kernel_mods_add_button.connect( "clicked", self.add_module )
+		self.kernel_mods_remove_button = gtk.Button( "Remove", gtk.STOCK_REMOVE )
+		self.kernel_mods_cancel_button = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.kernel_mods_cancel_button.connect( "clicked", self.delete_event, "destroy!" )
+		self.kernel_mods_forward_button = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+		self.kernel_mods_help_button = gtk.Button( "Help", gtk.STOCK_HELP )
+		self.kernel_mods_help_button.connect( "clicked", self.help, "Kernel Modules" )
+		
+		# Loop through modules[] and put it in kernel_mods_vbox
+		for module in modules:
+			self.kernel_mods_vbox.pack_start( module, gtk.FALSE, gtk.FALSE, 3 )
+			module.show()
+
+		# Add everything to the table
+		self.kernel_mods_table.attach( self.kernel_mods_main, 0, 1, 1, 2 )
+		self.kernel_mods_table.attach( self.kernel_mods_vbox, 1, 2, 1, 2 )
+		self.kernel_mods_table.attach( self.kernel_mods_add_button, 2, 3, 2, 3 )
+		self.kernel_mods_table.attach( self.kernel_mods_remove_button, 1, 2, 2, 3 )
+		self.kernel_mods_table.attach( self.kernel_mods_cancel_button, 0, 1, 3, 4 )
+		self.kernel_mods_table.attach( self.kernel_mods_help_button, 1, 2, 3, 4 )
+		self.kernel_mods_table.attach( self.kernel_mods_forward_button, 2, 3, 3, 4 )
+
+		# Attach table to notebook
+		self.main_notebook.insert_page( self.kernel_mods_table, self.kernel_mods_label, 2 )
+
+		# Show everything
+		self.kernel_mods_label.show()
+		self.kernel_mods_main.show()
+		self.kernel_mods_vbox.show()
+		self.kernel_mods_add_button.show()
+		self.kernel_mods_remove_button.show()
+		self.kernel_mods_cancel_button.show()
+		self.kernel_mods_help_button.show()
+		self.kernel_mods_forward_button.show()
+		self.kernel_mods_table.show()
+		
+		
+
 	def __init__( self ):
 
 		# Start the window
 		self.window1 = gtk.Window( gtk.WINDOW_TOPLEVEL )
 		self.window1.set_title( "gConfig-Init" )
 		self.window1.connect( "delete_event", self.delete_event )
-		self.window1.set_border_width( 20 )
+		self.window1.set_border_width( 5 )
 
-		# Create the main VBox
-		self.main_vbox = gtk.VBox( gtk.FALSE, 10 )
-		self.window1.add( self.main_vbox )
-
-		# Create HBox 1 (to hold the buttons)
-		self.hbox1 = gtk.HBox( gtk.FALSE, 20 )
-
-		# Create buttons for the HBox
-		self.cancel_button = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
-		self.cancel_button.connect( "clicked", self.delete_event, "destroy" )
-		self.forward_button = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
-
-		# Add them to the HBox
-		self.hbox1.pack_start( self.cancel_button, gtk.TRUE, gtk.TRUE, 20 )
-		self.hbox1.pack_end( self.forward_button, gtk.TRUE, gtk.TRUE, 20 )
+		# Call notebook_create()
+		self.notebook_create()
 		
-		# Create the separator
-		self.hseparator1 = gtk.HSeparator()
-
-		# Create the label
-		self.label1 = gtk.Label( "Welcome to gConfig-Init. This program will help you to configure your init scripts, telling your computer what services to load at boot. No changes will be made to your system until you've entered everything. You may hit 'Cancel' any time to quit the program." )
-		self.label1.set_line_wrap( gtk.TRUE )
-
-		# Create the image
-		self.gconfig_image = gtk.Image()
-		self.gconfig_image.set_from_file( "imgs/gconfig-init.png" )
-
-
-		# Add everything to the VBox
-		self.main_vbox.pack_start( self.gconfig_image, gtk.TRUE, gtk.TRUE, 10 )
-		self.main_vbox.pack_start( self.label1, gtk.TRUE, gtk.TRUE, 10 )
-		self.main_vbox.pack_start( self.hseparator1, gtk.TRUE, gtk.TRUE, 10 )
-		self.main_vbox.pack_start( self.hbox1, gtk.TRUE, gtk.TRUE, 10 )
-
-		# Show everything
-		self.cancel_button.show()
-		self.forward_button.show()
-		self.hbox1.show()
-		self.hseparator1.show()
-		self.label1.show()
-		self.gconfig_image.show()
-		self.main_vbox.show()
 		self.window1.show()
+		
 
-
+		
 
 def main():
 	gtk.main()
