@@ -22,7 +22,12 @@
 
 # Load the system module
 from os import system
+
+# Load the path module
 from os import path
+
+# Load the exit module
+from sys import exit
 
 print "Forty-two is booting the system...\n"
 
@@ -58,7 +63,7 @@ if tmp > 1: # If the filesystem is bad
 	system( "/bin/umount -a" )
 	system( "/bin/mount -n -o remount,ro /" )
 	system( "/sbin/reboot -f" )
-	exit # Kill the script
+	exit() # Kill the script
 
 # Mount filesystems
 system( "/bin/mount -n -o remount,rw /" )
