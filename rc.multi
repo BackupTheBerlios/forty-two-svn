@@ -4,7 +4,7 @@
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD license
 # 
-# Version 0.12c - Works and is pretty :)
+# Version 0.1e - Works and is pretty :)
 #
 # Needed from /etc/initconf.py:
 # services - Array of daemons
@@ -36,6 +36,7 @@ if initconf.daemons[0] != "":
 			tmp = "/etc/rc.d/"+daemon+" start"
 			system( tmp )
 			tmp = "echo \""+daemon+" loaded.\" > /tmp/rc.$$"
+			system( tmp )
 			# Log it and clean up
 			tmp = "/usr/bin/logger -t "+daemon+" -f /tmp/rc.$$"
 			system( tmp )
