@@ -11,14 +11,12 @@ import gtk
 TIMEZONE = ""
 FONT = ""
 KEYMAP = ""
-MODULES = [ "" ]
+MODULES = [ "ide-scsi", "sundance" ]
 BACKUP = ""
-BACKUPS = [ "" ]
-DAEMONS = [ "" ]
-HOSTNAME = [ "" ]
-INTERFACES = { "":"" }
-modules = [ "" ]
-modules[0] = gtk.Label( "ide-scsi" )
+BACKUPS = []
+DAEMONS = []
+HOSTNAME = []
+INTERFACES = {}
 
 class MainWindow:
 	
@@ -38,6 +36,7 @@ class MainWindow:
 		
 		# Create the help window
 		self.help_window = gtk.Window( gtk.WINDOW_TOPLEVEL )
+		self.help_window.set_title( "Help" )
 		self.help_window.set_border_width( 5 )
 		self.help_window.connect( "delete_event", self.second_destroy, "Help" )
 		
@@ -57,7 +56,7 @@ class MainWindow:
 			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
 			self.help_para1.show()
 		elif data == "Kernel Modules":
-			self.help_para1 = gtk.Label( "Set kernel modules to be loaded on boot here. To add a module, click 'Add' and input the modules name. To remove a module that you've already added, click remove and select the module you wish to remove. WARNING: Modules may have dependencies! Make sure you have a modules dependencies load before it!" )
+			self.help_para1 = gtk.Label( "Set kernel modules to be loaded on boot here. To add a module, put it's name in the text entry box beside 'Add Module:' and click 'Add.' To remove a module you have added, select it from the drop-down list and click 'Remove.'" )
 			self.help_para1.set_line_wrap( gtk.TRUE )
 			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
 			self.help_para1.show()
@@ -118,41 +117,19 @@ class MainWindow:
 
 	# Called from 'Kernel Modules'... opens an 'Add Module' dialog
 	def add_module( self, widget ):
+		module_name = self.kernel_mod_add_mod_entry.get_text()
+		self.kernel_mod_add_mod_entry.set_text( "" )
+		self.MODULES = self.MODULES + [ module_name ]
+		self.kernel_mod_rm_mod_combo.set_popdown_strings( self.MODULES )
 
-		# Create a new window
-		self.addwindow = gtk.Window( gtk.WINDOW_TOPLEVEL )
-		self.addwindow.set_title( "Add Module" )
-		self.addwindow.connect( "delete_event", self.second_destroy, "Add Module" )
-
-		# Create the vbox to hold everything
-		self.add_vbox = gtk.VBox( gtk.FALSE, 10 )
-		self.addwindow.add( self.add_vbox )
-
-		# Create the hboxes
-		self.add_hbox1 = gtk.HBox( gtk.FALSE, 10 )
-		self.add_hbox2 = gtk.HBox( gtk.FALSE, 10 )
-
-		# Create everything needed
-		self.add_mod_label = gtk.Label( "Module name:" )
-		self.add_mod_entry = gtk.Entry( 0 )
-		self.add_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
-		self.add_apply = gtk.Button( "Apply", gtk.STOCK_APPLY )
-
-		# Add them to their boxes
-		self.add_hbox1.pack_start( self.add_mod_label, gtk.FALSE, gtk.FALSE, 10 )
-		self.add_hbox1.pack_start( self.add_mod_entry, gtk.FALSE, gtk.FALSE, 10 )
-		self.add_hbox2.pack_start( self.add_cancel, gtk.FALSE, gtk.FALSE, 10 )
-		self.add_hbox2.pack_end( self.add_apply, gtk.FALSE, gtk.FALSE, 10 )
-
-		# Show everything
-		self.add_mod_label.show()
-		self.add_mod_entry.show()
-		self.add_cancel.show()
-		self.add_apply.show()
-		self.add_hbox1.show()
-		self.add_hbox2.show()
-		self.add_vbox.show()
-		self.addwindow.show()
+	def rm_module( self, widget ):
+		module_name = self.kernel_mod_rm_mod_combo.entry.get_text()
+		counter = 0
+		for module in self.MODULES:
+			if module == module_name:
+				self.MODULES.remove( module_name )
+				self.kernel_mod_rm_mod_combo.entry.set_text( "" )
+				self.kernel_mod_rm_mod_combo.set_popdown_strings( self.MODULES )
 
 	# Creates the notebook
 	def notebook_create( self ):
@@ -283,50 +260,136 @@ class MainWindow:
 		####################################
 		
 		# Create everything it'll need
-		self.kernel_mods_table = gtk.Table( 4, 3, gtk.TRUE )
-		self.kernel_mods_table.set_col_spacings( 5 )
-		self.kernel_mods_table.set_row_spacings( 10 )
-		self.kernel_mods_label = gtk.Label( "Kernel Modules" )
-		self.kernel_mods_main = gtk.Label( "Modules to be loaded:" )
-		self.kernel_mods_vbox = gtk.VBox( gtk.FALSE, 3 )
-		self.kernel_mods_add_button = gtk.Button( "Add", gtk.STOCK_ADD )
-		self.kernel_mods_add_button.connect( "clicked", self.add_module )
-		self.kernel_mods_remove_button = gtk.Button( "Remove", gtk.STOCK_REMOVE )
-		self.kernel_mods_cancel_button = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
-		self.kernel_mods_cancel_button.connect( "clicked", self.delete_event, "destroy!" )
-		self.kernel_mods_forward_button = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
-		self.kernel_mods_help_button = gtk.Button( "Help", gtk.STOCK_HELP )
-		self.kernel_mods_help_button.connect( "clicked", self.help, "Kernel Modules" )
-		
-		# Loop through modules[] and put it in kernel_mods_vbox
-		for module in modules:
-			self.kernel_mods_vbox.pack_start( module, gtk.FALSE, gtk.FALSE, 3 )
-			module.show()
+		self.kernel_mod_table = gtk.Table( 4, 3, gtk.FALSE )
+		self.kernel_mod_table.set_row_spacings( 5 )
+		self.kernel_mod_table.set_col_spacings( 10 )
+		self.kernel_mod_label = gtk.Label( "Kernel Modules" )
+		self.kernel_mod_image = gtk.Image()
+		self.kernel_mod_image.set_from_file( "imgs/gconfig-init.png" )
+		self.kernel_mod_add_mod_label = gtk.Label( "Add module:" )
+		self.kernel_mod_add_mod_entry = gtk.Entry( 0 )
+		self.kernel_mod_add_mod_button = gtk.Button( "Add", gtk.STOCK_ADD )
+		self.kernel_mod_add_mod_button.connect( "clicked", self.add_module )
+		self.kernel_mod_rm_mod_label = gtk.Label( "Remove module:" )
+		self.kernel_mod_rm_mod_combo = gtk.Combo()
+		self.kernel_mod_rm_mod_combo.set_popdown_strings( self.MODULES )
+		self.kernel_mod_rm_mod_combo.set_use_arrows( gtk.TRUE )
+		self.kernel_mod_rm_mod_button = gtk.Button( "Remove", gtk.STOCK_REMOVE )
+		self.kernel_mod_rm_mod_button.connect( "clicked", self.rm_module )
+		self.kernel_mod_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.kernel_mod_cancel.connect( "clicked", self.delete_event, "Kill it!" )
+		self.kernel_mod_help = gtk.Button( "Help", gtk.STOCK_HELP )
+		self.kernel_mod_help.connect( "clicked", self.help, "Kernel Modules" )
+		self.kernel_mod_forward = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
 
 		# Add everything to the table
-		self.kernel_mods_table.attach( self.kernel_mods_main, 0, 1, 1, 2 )
-		self.kernel_mods_table.attach( self.kernel_mods_vbox, 1, 2, 1, 2 )
-		self.kernel_mods_table.attach( self.kernel_mods_add_button, 2, 3, 2, 3 )
-		self.kernel_mods_table.attach( self.kernel_mods_remove_button, 1, 2, 2, 3 )
-		self.kernel_mods_table.attach( self.kernel_mods_cancel_button, 0, 1, 3, 4 )
-		self.kernel_mods_table.attach( self.kernel_mods_help_button, 1, 2, 3, 4 )
-		self.kernel_mods_table.attach( self.kernel_mods_forward_button, 2, 3, 3, 4 )
+		self.kernel_mod_table.attach( self.kernel_mod_image, 0, 3, 0, 1 )
+		self.kernel_mod_table.attach( self.kernel_mod_add_mod_label, 0, 1, 1, 2 )
+		self.kernel_mod_table.attach( self.kernel_mod_add_mod_entry, 1, 2, 1, 2 )
+		self.kernel_mod_table.attach( self.kernel_mod_add_mod_button, 2, 3, 1, 2 )
+		self.kernel_mod_table.attach( self.kernel_mod_rm_mod_label, 0, 1, 2, 3 )
+		self.kernel_mod_table.attach( self.kernel_mod_rm_mod_combo, 1, 2, 2, 3 )
+		self.kernel_mod_table.attach( self.kernel_mod_rm_mod_button, 2, 3, 2, 3 )
+		self.kernel_mod_table.attach( self.kernel_mod_cancel, 0, 1, 3, 4 )
+		self.kernel_mod_table.attach( self.kernel_mod_help, 1, 2, 3, 4 )
+		self.kernel_mod_table.attach( self.kernel_mod_forward, 2, 3, 3, 4 )
 
 		# Attach table to notebook
-		self.main_notebook.insert_page( self.kernel_mods_table, self.kernel_mods_label, 2 )
-
+		self.main_notebook.insert_page( self.kernel_mod_table, self.kernel_mod_label, 2 )
+		
 		# Show everything
-		self.kernel_mods_label.show()
-		self.kernel_mods_main.show()
-		self.kernel_mods_vbox.show()
-		self.kernel_mods_add_button.show()
-		self.kernel_mods_remove_button.show()
-		self.kernel_mods_cancel_button.show()
-		self.kernel_mods_help_button.show()
-		self.kernel_mods_forward_button.show()
-		self.kernel_mods_table.show()
+		self.kernel_mod_label.show()
+		self.kernel_mod_image.show()
+		self.kernel_mod_add_mod_label.show()
+		self.kernel_mod_add_mod_entry.show()
+		self.kernel_mod_add_mod_button.show()
+		self.kernel_mod_rm_mod_label.show()
+		self.kernel_mod_rm_mod_combo.show()
+		self.kernel_mod_rm_mod_button.show()
+		self.kernel_mod_cancel.show()
+		self.kernel_mod_help.show()
+		self.kernel_mod_forward.show()
+		self.kernel_mod_table.show()
+
+		##############################
+		# End 'Kernel Modules' stuff #
+		##############################
 		
+		#########################
+		# Begin 'Backups' stuff #
+		#########################
 		
+		# Create everything
+		self.backups_table = gtk.Table( 5, 3, gtk.FALSE )
+		self.backups_table.set_row_spacings( 5 )
+		self.backups_table.set_col_spacings( 10 )
+		self.backups_image = gtk.Image()
+		self.backups_image.set_from_file( "imgs/gconfig-init.png" )
+		self.backups_label = gtk.Label( "Backups" )
+		self.backups_question_label = gtk.Label( "Enable backing-up of select files on boot?" )
+		self.backups_question_label.set_line_wrap( gtk.TRUE )
+		self.backups_hbox = gtk.HBox( gtk.FALSE, 5 )
+		self.backups_radio_yes = gtk.RadioButton( None, "Yes" )
+		self.backups_radio_yes.set_active( gtk.TRUE )
+		self.backups_radio_no = gtk.RadioButton ( self.backups_radio_yes, "No" )
+		self.backups_add_file_label = gtk.Label( "Add file:" )
+		self.backups_add_file_entry = gtk.Entry( 0 )
+		self.backups_add_hbox = gtk.HBox( gtk.FALSE, 5 )
+		self.backups_add_file_obutton = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.backups_add_file_abutton = gtk.Button( "Add", gtk.STOCK_ADD )
+		self.backups_rm_file_label = gtk.Label( "Remove file:" )
+		self.backups_rm_file_combo = gtk.Combo()
+		self.backups_rm_file_combo.set_popdown_strings( self.BACKUPS )
+		self.backups_rm_file_rbutton = gtk.Button( "Remove", gtk.STOCK_REMOVE )
+		self.backups_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.backups_help = gtk.Button( "Help", gtk.STOCK_HELP )
+		self.backups_forward = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+		
+		# Add things to their HBoxes
+		self.backups_hbox.pack_start( self.backups_radio_yes, gtk.FALSE, gtk.FALSE, 5 )
+		self.backups_hbox.pack_start( self.backups_radio_no, gtk.FALSE, gtk.FALSE, 5 )
+		self.backups_add_hbox.pack_start( self.backups_add_file_obutton, gtk.FALSE, gtk.FALSE, 5 )
+		self.backups_add_hbox.pack_start( self.backups_add_file_abutton, gtk.FALSE, gtk.FALSE, 5 )
+
+		# Add things to the table
+		self.backups_table.attach( self.backups_image, 0, 3, 0, 1 )
+		self.backups_table.attach( self.backups_question_label, 1, 2, 1, 2 )
+		self.backups_table.attach( self.backups_hbox, 2, 3, 1, 2 )
+		self.backups_table.attach( self.backups_add_file_label, 0, 1, 2, 3 )
+		self.backups_table.attach( self.backups_add_file_entry, 1, 2, 2, 3 )
+		self.backups_table.attach( self.backups_add_hbox, 2, 3, 2, 3 )
+		self.backups_table.attach( self.backups_rm_file_label, 0, 1, 3, 4 )
+		self.backups_table.attach( self.backups_rm_file_combo, 1, 2, 3, 4 )
+		self.backups_table.attach( self.backups_rm_file_rbutton, 2, 3, 3, 4 )
+		self.backups_table.attach( self.backups_cancel, 0, 1, 4, 5 )
+		self.backups_table.attach( self.backups_help, 1, 2, 4, 5 )
+		self.backups_table.attach( self.backups_forward, 2, 3, 4, 5 )
+		
+		# Add it to the notebook
+		self.main_notebook.insert_page( self.backups_table, self.backups_label, 3 )
+		
+		# Show everything
+		self.backups_label.show()
+		self.backups_image.show()
+		self.backups_question_label.show()
+		self.backups_radio_yes.show()
+		self.backups_radio_no.show()
+		self.backups_hbox.show()
+		self.backups_cancel.show()
+		self.backups_help.show()
+		self.backups_forward.show()
+
+		# REMOVE THIS LATER
+		self.backups_add_file_label.show()
+		self.backups_add_file_entry.show()
+		self.backups_add_file_obutton.show()
+		self.backups_add_file_abutton.show()
+		self.backups_add_hbox.show()
+		self.backups_rm_file_label.show()
+		self.backups_rm_file_combo.show()
+		self.backups_rm_file_rbutton.show()
+		####################
+		self.backups_table.show()
 
 	def __init__( self ):
 
@@ -335,6 +398,10 @@ class MainWindow:
 		self.window1.set_title( "gConfig-Init" )
 		self.window1.connect( "delete_event", self.delete_event )
 		self.window1.set_border_width( 5 )
+
+		# Create some variable
+		self.MODULES = []
+		self.BACKUPS = []
 
 		# Call notebook_create()
 		self.notebook_create()
