@@ -16,7 +16,7 @@ from os import path
 
 
 # Load configuration from /etc/initconf.py
-import initconf.py
+import initconf
 
 # Set linefeed mode to avoid staircase effect
 system( "/bin/stty onlcr" )
