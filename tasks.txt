@@ -1,5 +1,11 @@
-!rc - undeadpenguin
-rc.conf
+# Task list for Forty-two
+# Prefix whatever you are working on with a !
+# Prefix completed stuff with a #
+# Also, write your name after it
+# Add comments with the syntax // after your name
+
+!rc - undeadpenguin // Just have to write an rc.conf so I can grab some variables from it
+!rc.conf - undeadpenguin // Skeleton rc.conf (XML)
 rc.modules
 rc.multi
 rc.shutdown
