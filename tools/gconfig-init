@@ -7,17 +7,6 @@ import pygtk
 pygtk.require( "2.0" )
 import gtk
 
-# Define global variables
-TIMEZONE = ""
-FONT = ""
-KEYMAP = ""
-MODULES = [ "ide-scsi", "sundance" ]
-BACKUP = ""
-BACKUPS = []
-DAEMONS = []
-HOSTNAME = []
-INTERFACES = {}
-
 class MainWindow:
 	
 	# Called when window is closed
@@ -26,7 +15,7 @@ class MainWindow:
 		return gtk.FALSE
 
 	# Used to destroy child windows
-	def second_destroy( self, widget, event, data="Help" ):
+	def second_destroy( self, widget, data ):
 		if data == "Help":
 			self.help_window.destroy()
 		elif data == "filesel1":
@@ -60,6 +49,24 @@ class MainWindow:
 			self.help_para1.set_line_wrap( gtk.TRUE )
 			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
 			self.help_para1.show()
+		elif data == "Backups":
+			self.help_para1 = gtk.Label( "The init scripts support optionally backing up select files on boot. To disable this, select 'No.' You can then hit forward, or click on one of the above tabs to skip to that particular section." )
+			self.help_para1.set_line_wrap( gtk.TRUE )
+			self.help_para2 = gtk.Label( "To enable this, select 'Yes.' You can add files to be backed up by hitting 'Open', selecting them, then hitting 'Add,' or by typing their name in and hitting 'Add.' To remove a file from being backed up, select it from the drop-down list and click 'Remove.'" )
+			self.help_para2.set_line_wrap( gtk.TRUE )
+			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
+			self.help_vbox.pack_start( self.help_para2, gtk.TRUE, gtk.TRUE, 5 )
+			self.help_para1.show()
+			self.help_para2.show()
+		elif data == "Services":
+			self.help_para1 = gtk.Label( "Set services to be started on boot here. This version of the init scripts supports loading services parallely - however, this feature is not yet thoroughly tested and should be avoided unless you know what you're doing. To enable parallel service loading, select 'Yes.'" )
+			self.help_para1.set_line_wrap( gtk.TRUE )
+			self.help_para2 = gtk.Label( "To add a service, type it's name in the 'Add service:' box and then click 'Add.' If you decide you don't want that service, you can select it from the drop-down list and click 'Remove' to remove it." )
+			self.help_para2.set_line_wrap( gtk.TRUE )
+			self.help_vbox.pack_start( self.help_para1, gtk.TRUE, gtk.TRUE, 5 )
+			self.help_vbox.pack_start( self.help_para2, gtk.TRUE, gtk.TRUE, 5 )
+			self.help_para1.show()
+			self.help_para2.show()
 
 		# Create the close button
 		self.help_close = gtk.Button( "Close", gtk.STOCK_CLOSE )
@@ -77,6 +84,10 @@ class MainWindow:
 			self.main_notebook.set_current_page( 1 )
 		elif data == "Kernel Modules":
 			self.main_notebook.set_current_page( 2 )
+		elif data == "Backups":
+			self.main_notebook.set_current_page( 3 )
+		elif data == "Services":
+			self.main_notebook.set_current_page( 4 )
 
 	# Called when 'Open' is clicked
 	def open_file( self, widget, data ):
@@ -95,6 +106,16 @@ class MainWindow:
 			self.filesel1.set_filename( "/usr/share/kbd/keymaps/" )
 			self.filesel1.ok_button.connect( "clicked", self.ok_action, "keymap" )
 
+		elif data == "backup":
+			self.filesel1 = gtk.FileSelection( "Backup Files" )
+			self.filesel1.set_filename( "/" )
+			self.filesel1.ok_button.connect( "clicked", self.ok_action, "backup" )
+		
+		elif data == "services":
+			self.filesel1 = gtk.FileSelection( "Services" )
+			self.filesel1.set_filename( "/etc/rc.d/" )
+			self.filesel1.ok_button.connect( "clicked", self.ok_action, "services" )
+
 		self.filesel1.cancel_button.connect( "clicked", self.second_destroy, "filesel1" )
 		self.filesel1.show()
 
@@ -111,9 +132,13 @@ class MainWindow:
 			self.basic_set_font_entry.set_text( filename )
 		elif data == "keymap":
 			self.basic_set_kmap_entry.set_text( filename )
+		elif data == "backup":
+			self.backups_add_file_entry.set_text( filename )
+		elif data == "services":
+			self.services_add_entry.set_text( filename )
 
 	 	# Close fileselection box
-		self.second_destroy( "delete_event", self.filesel1, "filesel1" )
+		self.second_destroy( self.filesel1, "filesel1" )
 
 	# Called from 'Kernel Modules'... opens an 'Add Module' dialog
 	def add_module( self, widget ):
@@ -124,12 +149,52 @@ class MainWindow:
 
 	def rm_module( self, widget ):
 		module_name = self.kernel_mod_rm_mod_combo.entry.get_text()
-		counter = 0
 		for module in self.MODULES:
 			if module == module_name:
 				self.MODULES.remove( module_name )
 				self.kernel_mod_rm_mod_combo.entry.set_text( "" )
 				self.kernel_mod_rm_mod_combo.set_popdown_strings( self.MODULES )
+	
+	# Called from 'Backups' to add a file to backup
+	def add_backup( self, widget ):
+		backup_name = self.backups_add_file_entry.get_text()
+		self.backups_add_file_entry.set_text( "" )
+		self.BACKUPS = self.BACKUPS + [ backup_name ]
+		self.backups_rm_file_combo.set_popdown_strings( self.BACKUPS )
+	
+	def rm_backup( self, widget ):
+		backup_name = self.backups_rm_file_combo.entry.get_text()
+		self.BACKUPS.remove( backup_name )
+		self.backups_rm_file_combo.entry.set_text( "" )
+		self.backups_rm_file_combo.set_popdown_strings( self.BACKUPS )
+
+	# Determines whether backing up is enabled
+	def backup_enabled( self, widget, data ):
+		if data == "on":
+			self.BACKUP = "yes"
+			
+		elif data == "off":
+			self.BACKUP = "no"
+
+	# Determines whether parallel boot is enabled
+	def parallel_enabled( self, widget, data ):
+		if data == "yes":
+			self.PARALLEL = "yes"
+		elif data == "no":
+			self.PARALLEL = "no"
+
+	# Called from 'Services' to add/remove service
+	def add_service( self, widget ):
+		service_name = self.services_add_entry.get_text()
+		self.services_add_entry.set_text( "" )
+		self.DAEMONS = self.DAEMONS + [ service_name ]
+		self.services_rm_combo.set_popdown_strings( self.DAEMONS )
+
+	def rm_service( self, widget ):
+		service_name = self.services_rm_combo.entry.get_text()
+		self.services_rm_combo.entry.set_text( "" )
+		self.DAEMONS.remove( service_name )
+		self.services_rm_combo.set_popdown_strings( self.DAEMONS )
 
 	# Creates the notebook
 	def notebook_create( self ):
@@ -281,6 +346,7 @@ class MainWindow:
 		self.kernel_mod_help = gtk.Button( "Help", gtk.STOCK_HELP )
 		self.kernel_mod_help.connect( "clicked", self.help, "Kernel Modules" )
 		self.kernel_mod_forward = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+		self.kernel_mod_forward.connect( "clicked", self.move_forward, "Backups" )
 
 		# Add everything to the table
 		self.kernel_mod_table.attach( self.kernel_mod_image, 0, 3, 0, 1 )
@@ -331,19 +397,27 @@ class MainWindow:
 		self.backups_hbox = gtk.HBox( gtk.FALSE, 5 )
 		self.backups_radio_yes = gtk.RadioButton( None, "Yes" )
 		self.backups_radio_yes.set_active( gtk.TRUE )
+		self.backups_radio_yes.connect( "toggled", self.backup_enabled, "on" )
 		self.backups_radio_no = gtk.RadioButton ( self.backups_radio_yes, "No" )
+		self.backups_radio_no.connect( "toggled", self.backup_enabled, "off" )
 		self.backups_add_file_label = gtk.Label( "Add file:" )
 		self.backups_add_file_entry = gtk.Entry( 0 )
 		self.backups_add_hbox = gtk.HBox( gtk.FALSE, 5 )
 		self.backups_add_file_obutton = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.backups_add_file_obutton.connect( "clicked", self.open_file, "backup" )
 		self.backups_add_file_abutton = gtk.Button( "Add", gtk.STOCK_ADD )
+		self.backups_add_file_abutton.connect( "clicked", self.add_backup )
 		self.backups_rm_file_label = gtk.Label( "Remove file:" )
 		self.backups_rm_file_combo = gtk.Combo()
 		self.backups_rm_file_combo.set_popdown_strings( self.BACKUPS )
 		self.backups_rm_file_rbutton = gtk.Button( "Remove", gtk.STOCK_REMOVE )
+		self.backups_rm_file_rbutton.connect( "clicked", self.rm_backup )
 		self.backups_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.backups_cancel.connect( "clicked", self.delete_event, "Kill it now!" )
 		self.backups_help = gtk.Button( "Help", gtk.STOCK_HELP )
+		self.backups_help.connect( "clicked", self.help, "Backups" )
 		self.backups_forward = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+		self.backups_forward.connect( "clicked", self.move_forward, "Services" )
 		
 		# Add things to their HBoxes
 		self.backups_hbox.pack_start( self.backups_radio_yes, gtk.FALSE, gtk.FALSE, 5 )
@@ -378,8 +452,6 @@ class MainWindow:
 		self.backups_cancel.show()
 		self.backups_help.show()
 		self.backups_forward.show()
-
-		# REMOVE THIS LATER
 		self.backups_add_file_label.show()
 		self.backups_add_file_entry.show()
 		self.backups_add_file_obutton.show()
@@ -388,8 +460,93 @@ class MainWindow:
 		self.backups_rm_file_label.show()
 		self.backups_rm_file_combo.show()
 		self.backups_rm_file_rbutton.show()
-		####################
 		self.backups_table.show()
+
+		###########################
+		# End stuff for 'Backups' #
+		###########################
+
+		##############################
+		# Begin stuff for 'Services' #
+		##############################
+		
+		# Create everything for 'Services' #
+		self.services_table = gtk.Table( 5, 3, gtk.FALSE )
+		self.services_table.set_row_spacings( 10 )
+		self.services_table.set_col_spacings( 5 )
+		self.services_label = gtk.Label( "Services" )
+		self.services_image = gtk.Image()
+		self.services_image.set_from_file( "imgs/gconfig-init.png" )
+		self.services_parallel_label = gtk.Label( "Enable parallel boot (unstable)?" )
+		self.services_parallel_hbox = gtk.HBox( gtk.FALSE, 5 )
+		self.services_parallel_yes = gtk.RadioButton( None, "Yes" )
+		self.services_parallel_yes.connect( "toggled", self.parallel_enabled, "yes" )
+		self.services_parallel_no = gtk.RadioButton( self.services_parallel_yes, "No" )
+		self.services_parallel_no.set_active( gtk.TRUE )
+		self.services_parallel_no.connect( "toggled", self.parallel_enabled, "no" )
+		self.services_add_label = gtk.Label( "Add service:" )
+		self.services_add_entry = gtk.Entry( 0 )
+		self.services_add_abutton = gtk.Button( "Add", gtk.STOCK_ADD )
+		self.services_add_abutton.connect( "clicked", self.add_service )
+		self.services_rm_label = gtk.Label( "Remove service:" )
+		self.services_rm_combo = gtk.Combo()
+		self.services_rm_combo.set_popdown_strings( self.DAEMONS )
+		self.services_rm_button = gtk.Button( "Remove", gtk.STOCK_REMOVE )
+		self.services_rm_button.connect( "clicked", self.rm_service )
+		self.services_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.services_cancel.connect( "clicked", self.delete_event, "DIE!" )
+		self.services_help = gtk.Button( "Help", gtk.STOCK_HELP )
+		self.services_help.connect( "clicked", self.help, "Services" )
+		self.services_forward = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+
+		# Add things to their appropriate HBoxes
+		self.services_parallel_hbox.pack_start( self.services_parallel_yes, gtk.FALSE, gtk.FALSE, 5 )
+		self.services_parallel_hbox.pack_start( self.services_parallel_no, gtk.FALSE, gtk.FALSE, 5 )
+		
+		# Add everything to the table
+		self.services_table.attach( self.services_image, 0, 3, 0, 1 )
+		self.services_table.attach( self.services_parallel_label, 1, 2, 1, 2 )
+		self.services_table.attach( self.services_parallel_hbox, 2, 3, 1, 2 )
+		self.services_table.attach( self.services_add_label, 0, 1, 2, 3 )
+		self.services_table.attach( self.services_add_entry, 1, 2, 2, 3 )
+		self.services_table.attach( self.services_add_abutton, 2, 3, 2, 3 )
+		self.services_table.attach( self.services_rm_label, 0, 1, 3, 4 )
+		self.services_table.attach( self.services_rm_combo, 1, 2, 3, 4 )
+		self.services_table.attach( self.services_rm_button, 2, 3, 3, 4 )
+		self.services_table.attach( self.services_cancel, 0, 1, 4, 5 )
+		self.services_table.attach( self.services_help, 1, 2, 4, 5 )
+		self.services_table.attach( self.services_forward, 2, 3, 4, 5 )
+
+		# Add the table to the notebook
+		self.main_notebook.insert_page( self.services_table, self.services_label, 4 )
+		
+		# Show everything
+		self.services_label.show()
+		self.services_image.show()
+		self.services_parallel_label.show()
+		self.services_parallel_no.show()
+		self.services_parallel_yes.show()
+		self.services_parallel_hbox.show()
+		self.services_add_label.show()
+		self.services_add_entry.show()
+		self.services_add_abutton.show()
+		self.services_rm_label.show()
+		self.services_rm_combo.show()
+		self.services_rm_button.show()
+		self.services_cancel.show()
+		self.services_help.show()
+		self.services_forward.show()
+		self.services_table.show()
+
+		############################
+		# End stuff for 'Services' #
+		############################
+		
+		############################
+		# Begin stuff for 'Finish' #
+		############################
+		
+		# Create stuff for 'Finish'
 
 	def __init__( self ):
 
@@ -402,6 +559,8 @@ class MainWindow:
 		# Create some variable
 		self.MODULES = []
 		self.BACKUPS = []
+		self.DAEMONS = []
+		self.PARALLEL = "no"
 
 		# Call notebook_create()
 		self.notebook_create()
