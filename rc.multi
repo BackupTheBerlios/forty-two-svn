@@ -3,13 +3,9 @@
 # /etc/rc.multi - Multi-user startup script (runlevel 3)
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD license
-# 
-# Version 0.1e - Works and is pretty :)
+# Editors: undeadpenguin
 #
-# Needed from /etc/initconf.py:
-# services - Array of daemons
-# backup - yes or no as to whether to back up or not
-# backups - Array of files to backup
+# Version 0.2 - Works and is pretty :)
 #
 
 # Load system module
@@ -19,13 +15,13 @@ from os import system
 from os import path
 
 # Import variables from /etc/initconf.py
-import initconf
+from initconf import *
 
 
 # Start services
-if initconf.daemons[0] != "":
+if DAEMONS[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Starting daemons:"
-	for daemon in initconf.daemons:
+	for daemon in DAEMONS:
 		print "\x1b[1;36m>>>\x1b[0m Starting",daemon
 		
 		# Make sure there's a script for it
@@ -45,10 +41,10 @@ if tmp:
 	system( "/bin/bash /etc/rc.local" )
 
 # Backup files if necessary
-if initconf.backup == "yes":
-	if initconf.backups != "":
+if BACKUP == "yes":
+	if BACKUPS != "":
 		print "\x1b[1;37m>>\x1b[0m Backing up files:"
-		for file in initconf.backups:
+		for file in BACKUPS:
 			print "\x1b[1;36m>>>\x1b[0m Backing up",file
 			tmp = "cp "+file+" /var/backup"
 			system( tmp )

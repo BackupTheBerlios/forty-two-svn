@@ -3,9 +3,9 @@
 # /etc/rc.shutdown: system shutdown script
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD licence
-# coded by sethgeekx86
+# Editors: sethgeekx86, undeadpenguin
 #
-# Version 0.13 - Should work now =o)
+# Version 0.2 - Added support for new initconf variables (uppercase)
 #
 
 # Load python system module
@@ -16,7 +16,7 @@ from os import path
 
 
 # Load configuration from /etc/initconf.py
-import initconf
+from initconf import *
 
 # Set linefeed mode to avoid staircase effect
 system( "/bin/stty onlcr" )
@@ -25,9 +25,9 @@ system( "/bin/stty onlcr" )
 print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is shutting down the system\x1b[0m \x1b[1;37m::.\x1b[0m\n"
 
 # Kill services (daemons)
-if initconf.daemons[0] != "":
+if DAEMONS[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
-	for daemon in initconf.daemons:
+	for daemon in DAEMONS:
 		print "\x1b[1;36m>>>\x1b[0m Stopping",daemon
 		tmp = "/etc/rc.d/"+daemon+" stop"
 		system( tmp )

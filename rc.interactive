@@ -38,8 +38,7 @@ if DAEMONS[0] != "":
 		if startit == "y":
 			# Make sure there's a script for it
 			tmplocation = "/etc/rc.d/"+daemon
-			location = path.exists( tmplocation )
-				if location:
+			if path.exists( tmplocation ):
 					# Start the daemon
 					tmp = "/etc/rc.d/"+daemon+" start"
 					system( tmp )

@@ -4,18 +4,8 @@
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD license
 #
-
-#
-# Version 0.1d - Boots and should look nice
-# Last change: Made it look pretty
-#
-
-# Variables needed from /etc/initconf.py:
-# timezone
-# hostname
-# font (console font)
-# keymap
-# modules (_ARRAY_ of modules)
+# Version 0.2 - Boots and should look nice
+# Last change: updated for new initconf variables (uppercase)
 #
 
 # Load the system module
@@ -28,7 +18,7 @@ from os import path
 from sys import exit
 
 # Load variables from initconf.py
-import initconf
+from initconf import *
 
 # Print ".:: Forty-two is booting the system ::."
 print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is booting the system\x1b[0m \x1b[1;37m::.\x1b[0m"
@@ -88,10 +78,10 @@ system( "/sbin/sysctl -p > /dev/null" )
 system( "/sbin/ldconfig" )
 
 # Configure hostname
-if initconf.hostname != "":
-	print "\x1b[1;37m>>\x1b[0m Setting hostname to",initconf.hostname+":"
+if HOSTNAME != "":
+	print "\x1b[1;37m>>\x1b[0m Setting hostname to",HOSTNAME+":"
 	#Set the hostname
-	tmp = "/bin/hostname "+initconf.hostname
+	tmp = "/bin/hostname "+HOSTNAME
 	system( tmp )
 	print "\x1b[1;32mDONE\x1b[0m\n"
 
@@ -107,24 +97,24 @@ tmp = path.exists( "/etc/adjtime" )
 if tmp == False:
 	system( "/bin/echo \"0.0 0 0.0\" > /etc/adjtime" )
 
-# And set the timezone ;)
-if initconf.timezone != "":
-	tmp = "/bin/ln -sf /usr/share/zoneinfo/" + initconf.timezone
+# And set the timezone
+if TIMEZONE != "":
+	tmp = "/bin/ln -sf /usr/share/zoneinfo/"+TIMEZONE
 	system( tmp )
 
 system( "/sbin/hwclock --hctosys" )
 print "\x1b[1;32mDONE\x1b[0m"
 
 # Load console font (OPTIONAL)
-if initconf.font != "":
-	print "\x1b[1;37m>>\x1b[0mSetting console font to",initconf.font+":"
-	tmp = "/usr/bin/setfont "+initconf.font
+if FONT != "":
+	print "\x1b[1;37m>>\x1b[0mSetting console font to",FONT+":"
+	tmp = "/usr/bin/setfont "+FONT
 	system( tmp )
 	print "\x1b[1;32mDONE\x1b[0m"
 
-if initconf.keymap != "":
-	print "\x1b[1;37m>>\x1b[0m Setting keymap to",initconf.keymap+":"
-	tmp = "/bin/loadkeys -q "+initconf.keymap
+if KEYMAP != "":
+	print "\x1b[1;37m>>\x1b[0m Setting keymap to",KEYMAP+":"
+	tmp = "/bin/loadkeys -q "+KEYMAP
 	system( tmp )
 	print "\x1b[1;32mDONE\x1b[0m\n"
 
@@ -132,9 +122,9 @@ if initconf.keymap != "":
 system( "/usr/bin/setterm -blank 15" )
 
 # Load modules
-if initconf.modules[0] != "":
+if MODULES[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Loading modules:"
-	for module in initconf.modules:
+	for module in MODULES:
 		print "\x1b[1;36m>>>\x1b[0m Loading module ",module
 		tmp = "/sbin/modprobe "+module
 		system( tmp )

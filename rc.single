@@ -3,25 +3,25 @@
 # /etc/rc.single: single-user startup script
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD licence
-# coded by sethgeekx86
+# Editors: sethgeekx86, undeadpenguin
 #
-# Version 0.1c - *should* work... not positive, though...
+# Version 0.2 - Added support for new initconf variables (uppercase)
 #
 
 # Load python system modules
 from os import system
 
 # Load configuration from initconf.py
-import initconf
+from initconf import *
 
 PRELEVEL= system( "/bin/echo $PRELEVEL" )
 N = system( "/bin/echo $N" )
 RUNLEVEL = system( "/bin/echo $RUNLEVEL" )
 
 if PRELEVEL == 2:
-	if initconf.daemons[0] != "":
+	if DAEMONS[0] != "":
 		print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
-		for daemon in initconf.daemons:
+		for daemon in DAEMONS:
 			print "\x1b[1;36m>>>\x1b[0m Stopping",daemon
 			tmp = "/etc/rc.d/"+daemon+" stop"
 			system( tmp )
@@ -48,3 +48,4 @@ print "\x1b[1;37mPynux v0.01 - Booted by Forty-two\x1b[0m"
 print "\x1b[1;31mSINGLE USER MODE\x1b[0m"
 
 # End of file
+#
