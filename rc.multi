@@ -51,7 +51,7 @@ if initconf.backup == "yes":
 	if initconf.backups != "":
 		for file in initconf.backups:
 			print "Backing up:",file+"... "
-			tmp = "cp",file,"/var/backup"
+			tmp = "cp "+file+" /var/backup"
 			system( tmp )
 			print "\033[1;32;40mDONE\033[0m\n"
 	else:
