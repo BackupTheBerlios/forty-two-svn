@@ -37,4 +37,6 @@ Docs for:
 
 Make installer prompt you
 
+!Get logging working - undeadpenguin
+
 And of course, fix all the bugs you find!

@@ -15,7 +15,7 @@ from os import system
 from os import path
 
 # Import variables from /etc/initconf.py
-from initconf import DAEMONS,BACKUP,BACKUPS
+from initconf import DAEMONS,BACKUP,BACKUPS,HOSTNAME
 
 
 # Start services
