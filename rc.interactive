@@ -40,11 +40,11 @@ if DAEMONS[0] != "":
 			tmplocation = "/etc/rc.d/"+daemon
 			location = path.exists( tmplocation )
 				if location:
-				# Start the daemon
-				tmp = "/etc/rc.d/"+daemon+" start"
-				system( tmp )
-		else:
-			print "\x1b[1;31mERROR: No service",daemon+"!\x1b[0m\n"
+					# Start the daemon
+					tmp = "/etc/rc.d/"+daemon+" start"
+					system( tmp )
+			else:
+				print "\x1b[1;31mERROR: No service",daemon+"!\x1b[0m\n"
 print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Run the user's local script (if it exists)
