@@ -29,7 +29,7 @@ files = [ "rc", "rc.multi", "rc.shutdown", "rc.single", "initconf.py", "inittab"
 for file in files:
 	tmp = "/etc/"+file
 	if path.exists( tmp ):
-		print "\x1b[1;31mMOVING\x1b[0m /etc/"+file+"to /etc/"+file+".old"
+		print "\x1b[1;31mMOVING\x1b[0m /etc/"+file+" to /etc/"+file+".old"
 		tmp = "mv /etc/"+file+" /etc/"+file+".old"
 		system( tmp )
 
