@@ -4,14 +4,16 @@
 # Also, write your name after it
 # Add comments with the syntax // after your name
 
-!rc - undeadpenguin // No more XML - at least not for the first version - it should be done by tonight
-!rc.conf - undeadpenguin // Have to re-write it for non-XML
-!rc.multi - undeadpenguin // Done for the most part... I still need to parse the XML, though...
-!rc.shutdown  seth // some part will need to be fixed when we code 
-runlevle , ete.
-
-!rc.single - //seth done , there are a few issue , see todo
+#rc - undeadpenguin // DONE
+#rc.conf - undeadpenguin // DONE
+#rc.multi - undeadpenguin // DONE
+#rc.shutdown  seth // DONE 
+#rc.single - seth // DONE
 #inittab - undeadpenguin // DONE
-rc.d/crond
-rc.d/inetd
-rc.d/net
+!init - undeadpenguin // Have to find some init code to look at...
+
+----------+
+rc.d/crond|
+rc.d/inetd|<-- Do not do yet!
+rc.d/net  |
+----------+
