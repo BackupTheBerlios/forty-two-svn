@@ -39,6 +39,7 @@ Make runlevel 5 boot to X
 
 Add a login_manager = "" variable to initconf.py.
 
-ncurses installer? At least an installer that prompts you.
+ncurses installer? At least an installer that prompts you. //
+seth , i will look into doing a ncures installer
 
 And of course, fix all the bugs you find!
