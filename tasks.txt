@@ -4,12 +4,12 @@
 # Also, write your name after it
 # Add comments with the syntax // after your name
 
-!rc - undeadpenguin // Just have to write an rc.conf so I can grab some variables from it
-#rc.conf - undeadpenguin // Basic rc.conf (XML)
-rc.modules
-rc.multi
-rc.shutdown  seth // i will give it a try!
-rc.single
+!rc - undeadpenguin // I need some help with parsing the XML... =/
+#rc.conf - undeadpenguin // Basic rc.conf (XML) DONE
+!rc.multi - undeadpenguin
+!rc.shutdown  seth // i will give it a try!
+!rc.single - seth
+!inittab - undeadpenguin
 rc.d/crond
 rc.d/inetd
 rc.d/net
