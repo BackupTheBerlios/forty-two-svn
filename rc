@@ -6,7 +6,7 @@
 #
 
 #
-# Version 0.12b - Boots and should look nice
+# Version 0.1d - Boots and should look nice
 # Last change: Made it look pretty
 #
 
@@ -78,7 +78,7 @@ system( "/bin/mount -a -O no_netdev" )
 print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Clean up miscellaneous files
-system( "/var/run/utmp" )
+system( ": > /var/run/utmp" )
 system( "/bin/rm -rf /forcefsck /fastboot /etc/nologin /etc/shutdownpid /var/run/*.pid /var/lock/* /tmp/* &> /dev/null" )
 
 # Set kernel variables

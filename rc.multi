@@ -33,8 +33,9 @@ if initconf.daemons[0] != "":
 		location = path.exists( tmplocation )
 		if location:
 			# Start the daemon
-			tmp = "/etc/rc.d/"+daemon+" start &> /tmp/rc.$$ || echo -n [\"ERROR\"]"
+			tmp = "/etc/rc.d/"+daemon+" start"
 			system( tmp )
+			tmp = "echo \""+daemon+" loaded.\" > /tmp/rc.$$"
 			# Log it and clean up
 			tmp = "/usr/bin/logger -t "+daemon+" -f /tmp/rc.$$"
 			system( tmp )
