@@ -5,7 +5,7 @@
 # Released under a BSD license
 # Editors: undeadpenguin
 #
-# Version 0.2 - Works and is pretty :)
+# Version 0.3 - Lots of updates: look before editing
 #
 
 # Load system module
@@ -15,30 +15,23 @@ from os import system
 from os import path
 
 # Import variables from /etc/initconf.py
-from initconf import *
+from initconf import DAEMONS,BACKUP,BACKUPS
 
 
 # Start services
 if DAEMONS[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Starting daemons:"
 	for daemon in DAEMONS:
-		print "\x1b[1;36m>>>\x1b[0m Starting",daemon
-		
 		# Make sure there's a script for it
-		tmplocation = "/etc/rc.d/"+daemon
-		location = path.exists( tmplocation )
-		if location:
+		if path.exists( "/etc/rc.d/"+daemon ):
 			# Start the daemon
-			tmp = "/etc/rc.d/"+daemon+" start"
-			system( tmp )
-			print "\x1b[1;32mDONE\x1b[0m\n"
+			system( "/etc/rc.d/"+daemon+" start" )
 		else:
-			print "\x1b[1;31mERROR: No service",daemon+"!\x1b[0m\n"
+			print "\x1b[1;31mERROR: No service",daemon+" in /etc/rc.d/ !!\x1b[0m"
 
 # Run the user's local script (if it exists)
-tmp = path.exists( "/etc/rc.local" )
-if tmp:
-	system( "/bin/bash /etc/rc.local" )
+if path.exists( "/etc/rc.local" ):
+	system( "/etc/rc.local" )
 
 # Backup files if necessary
 if BACKUP == "yes":
@@ -46,8 +39,7 @@ if BACKUP == "yes":
 		print "\x1b[1;37m>>\x1b[0m Backing up files:"
 		for file in BACKUPS:
 			print "\x1b[1;36m>>>\x1b[0m Backing up",file
-			tmp = "cp "+file+" /var/backup"
-			system( tmp )
+			system( "/bin/cp "+file+" /var/backup" )
 	else:		   
 		# No, it's not a typo; 31 is red
 		print "\x1b[1;31mERROR: No backups defined in /etc/initconf.py!\x1b[0m"

@@ -4,7 +4,7 @@
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD license
 # 
-# Version 0.1 - Works and is pretty :)
+# Version 0.2 - Lots of updates - too many list
 #
 # Editors: undeadpenguin
 #
@@ -37,21 +37,19 @@ if DAEMONS[0] != "":
 		startit = raw_input( tmp )
 		if startit == "y":
 			# Make sure there's a script for it
-			tmplocation = "/etc/rc.d/"+daemon
-			if path.exists( tmplocation ):
-					# Start the daemon
-					tmp = "/etc/rc.d/"+daemon+" start"
-					system( tmp )
+			if path.exists( "/etc/rc.d/"+daemon ):
+				# Start the daemon
+				system( "/etc/rc.d/"+daemon+" start" )
 			else:
-				print "\x1b[1;31mERROR: No service",daemon+"!\x1b[0m\n"
-print "\x1b[1;32mDONE\x1b[0m\n"
+				print "\x1b[1;31mERROR: No service",daemon+"!\x1b[0m"
+print "\x1b[1;32mDONE\x1b[0m"
 
 # Run the user's local script (if it exists)
 tmp = path.exists( "/etc/rc.local" )
 if tmp:
 	startit = raw_input( "Execute /etc/rc.local?[n] " )
 	if startit == "y":
-		system( "/bin/bash /etc/rc.local" )
+		system( "/etc/rc.local" )
 
 # Backup files if necessary
 startit = raw_input( "Backup select files to /var/backup?[n] " )
@@ -59,23 +57,15 @@ if startit == "y":
 	if BACKUPS != "":
 		print "\x1b[1;37m>>\x1b[0m Backing up files:"
 		for file in BACKUPS:
-			tmp = "Back up "+file+"?[n] "
-			startit = raw_input( tmp )
+			startit = raw_input( "Back up "+file+"?[n] " )
 			if startit == "y":
 				tmp = "cp "+file+" /var/backup"
-				system( tmp )
+				system( "/bin/cp "+file+" /var/backup" )
 	else:		   
 		# No, it's not a typo; 31 is red
 		print "\x1b[1;31mERROR: No backups defined in /etc/initconf.py!\x1b[0m"
 
 print "\x1b[1;32mDONE\x1b[0m"
-
-# Start login manager ?
-if LOGIN_MANAGER != "":
-	tmp = "Start "+LOGIN_MANAGER+"?[n] "
-	startit = raw_input ( tmp )
-	if startit == "y":
-		tmp = "/etc/rc.d/"+LOGIN_MANAGER+" start"
 
 system( "/usr/bin/clear" )
 print "\x1b[1;37mPynux v0.01 - Booted by Forty-two\x1b[0m"

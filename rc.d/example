@@ -1,0 +1,62 @@
+#!/usr/bin/python
+#
+# Example daemon start/stop/restart script
+#
+
+# Import system
+# This allows you to send commands to the system
+from os import system
+
+# Import argv
+# This array contains all arguments passed to the script
+from sys import argv
+
+# Put services this service depends on in the NEEDS array
+# For example, NFS would depend on net
+NEEDS = [ "service1", "service2" ]
+
+# Function to start the daemon
+def start():
+	# Print that you're starting the daemon
+	# Use this same syntax! All you have to change is [daemon name]!
+	print "\x1b[1;36m>>>\x1b[0m Starting [daemon name]"
+
+	# Start the daemon
+	system( "/path/to/daemon arguments -options" )
+
+	# Finish by saying that you're done
+	# DO NOT CHANGE THIS
+	print "\x1b[1;32mDONE\x1b[0m"
+
+# Function to stop the daemon
+def stop():
+	# Tell them you're stopping it
+	# Use this syntax! Only change [daemon name]!
+	print "\x1b[1;36m>>>\x1b[0m Stopping [daemon name]:"
+
+	# Stop the daemon
+	system( "killall -q /path/to/daemon" )
+
+	# Tell the user it's done
+	# DO NOT CHANGE THIS LINE
+	print "\x1b[1;32mDONE\x1b[0m"
+
+# If the argument is start execute the start function
+if argv[1] == "start": # argv[0] is the executable's name
+	start()
+
+# If the argument is stop, execute the stop function
+elif argv[1] == "stop":
+	stop()
+
+# If the argument is restart, execut stop() then start()
+elif argv[1] == "restart":
+	stop()
+	start()
+
+# If the argument is none of the above, bite the stupid user!
+else:
+	print "\x1b[1;31mERROR:\x1b[0m No argument "+argv[1]
+
+# End of file
+#

@@ -5,7 +5,7 @@
 # Released under a BSD licence
 # Editors: sethgeekx86, undeadpenguin
 #
-# Version 0.2 - Added support for new initconf variables (uppercase)
+# Version 0.3 - Support for new rc.d scripts
 #
 
 # Load python system module
@@ -16,7 +16,7 @@ from os import path
 
 
 # Load configuration from /etc/initconf.py
-from initconf import *
+from initconf import DAEMONS
 
 # Set linefeed mode to avoid staircase effect
 system( "/bin/stty onlcr" )
@@ -28,10 +28,8 @@ print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is shutting down the system\x1b[
 if DAEMONS[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
 	for daemon in DAEMONS:
-		print "\x1b[1;36m>>>\x1b[0m Stopping",daemon
-		tmp = "/etc/rc.d/"+daemon+" stop"
-		system( tmp )
-	print "\x1b[1;32mDONE\x1b[0m\n"
+		system( "/etc/rc.d/"+daemon+" stop" )
+	print "\x1b[1;32mDONE\x1b[0m"
 
 # Terminate all processes
 system ( "/sbin/killall5 -15 &> /dev/null" )

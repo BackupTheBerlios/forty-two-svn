@@ -5,27 +5,16 @@
 # Released under a BSD licence
 # Editors: sethgeekx86, undeadpenguin
 #
-# Version 0.2 - Added support for new initconf variables (uppercase)
+# Version 0.3 - I (undeadpenguin) have hacked this thing to pieces...
+#		I hope it still works...
 #
 
 # Load python system modules
 from os import system
 
-# Load configuration from initconf.py
-from initconf import *
-
 PRELEVEL= system( "/bin/echo $PRELEVEL" )
 N = system( "/bin/echo $N" )
 RUNLEVEL = system( "/bin/echo $RUNLEVEL" )
-
-if PRELEVEL == 2:
-	if DAEMONS[0] != "":
-		print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
-		for daemon in DAEMONS:
-			print "\x1b[1;36m>>>\x1b[0m Stopping",daemon
-			tmp = "/etc/rc.d/"+daemon+" stop"
-			system( tmp )
-		print "\x1b[1;32mDONE\x1b[0m\n"
 		
 # If $PRELEVEL equals $N
 if PRELEVEL == N: 

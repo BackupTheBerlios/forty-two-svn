@@ -4,8 +4,8 @@
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD license
 #
-# Version 0.2 - Boots and should look nice
-# Last change: updated for new initconf variables (uppercase)
+# Version 0.3 - Almost a re-write of v0.1...
+# Last change: Fixed system( ) errors and removed a lot of \n's.
 #
 
 # Load the system module
@@ -21,8 +21,7 @@ from sys import exit
 from initconf import *
 
 # Print ".:: Forty-two is booting the system ::."
-print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is booting the system\x1b[0m \x1b[1;37m::.\x1b[0m"
-print "\n"
+print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is booting the system\x1b[0m \x1b[1;37m::.\x1b[0m\n"
 
 # Start devfsd below
 # I would have started pts, but I don't know what daemon to start...
@@ -30,13 +29,13 @@ print "\n"
 
 print "\x1b[1;37m>>\x1b[0m Starting Devfsd:"
 system( "/sbin/devfsd /dev" )
-print "\x1b[1;32mDONE\x1b[0m\n" # DONE in green
+print "\x1b[1;32mDONE\x1b[0m" # DONE in green
 
 # Activate swap partition
 
 print "\x1b[1;37m>>\x1b[0m Activating swap:"
 system( "/sbin/swapon -a" )
-print "\x1b[1;32mDONE\x1b[0m\n"
+print "\x1b[1;32mDONE\x1b[0m"
 
 # Mount root (/) read-only
 system( "/bin/mount -n -o remount,ro /" )
@@ -47,25 +46,27 @@ print "\x1b[1;37m>>\x1b[0m Checking filesystem for errors:"
 system( "/sbin/fsck -A -T -C -a" )
 tmp = system( "/bin/echo $?" ) # The shell variable $?
 if tmp > 1: # If the filesystem is bad
-	print "************ ERROR: FILESYSTEM CHECK FAILED *************\n"
-	print "**                                                     **\n"
-	print "** You will now enter a shell to repair this manually. **\n"
-	print "** You will then be rebooted.                          **\n"
-	print "*********************************************************\n"
+	print "************ ERROR: FILESYSTEM CHECK FAILED *************"
+	print "**                                                     **"
+	print "** You will now enter a shell to repair this manually. **"
+	print "** You will then be rebooted.                          **"
+	print "** You will need to type: mount -n -o remount,rw /     **"
+	print "** To get write access to /                            **"
+	print "*********************************************************"
 	# Give them a shell then reboot the system
 	system( "/sbin/sulogin -p" )
 	system( "/bin/umount -a" )
 	system( "/bin/mount -n -o remount,ro /" )
 	system( "/sbin/reboot -f" )
 	exit() # Kill the script
-print "\x1b[1;32mDONE\x1b[0m\n"
+print "\x1b[1;32mDONE\x1b[0m"
 
 # Mount filesystems
 print "\x1b[1;37m>>\x1b[0m Mounting filesystems:"
 system( "/bin/mount -n -o remount,rw /" )
 system( "/bin/rm -f /etc/mtab*" )
 system( "/bin/mount -a -O no_netdev" )
-print "\x1b[1;32mDONE\x1b[0m\n"
+print "\x1b[1;32mDONE\x1b[0m"
 
 # Clean up miscellaneous files
 system( ": > /var/run/utmp" )
@@ -75,32 +76,30 @@ system( "/bin/rm -rf /forcefsck /fastboot /etc/nologin /etc/shutdownpid /var/run
 system( "/sbin/sysctl -p > /dev/null" )
 
 # Update shared library links
+print "\x1b[1;37m>>\x1b[0m Updating shared library links:"
 system( "/sbin/ldconfig" )
+print "\x1b[1;32mDONE\x1b[0m"
 
 # Configure hostname
 if HOSTNAME != "":
 	print "\x1b[1;37m>>\x1b[0m Setting hostname to",HOSTNAME+":"
 	#Set the hostname
-	tmp = "/bin/hostname "+HOSTNAME
-	system( tmp )
-	print "\x1b[1;32mDONE\x1b[0m\n"
+	system( "/bin/hostname "+HOSTNAME )
+	print "\x1b[1;32mDONE\x1b[0m"
 
 # Load random seed
 # Returns true if /var/tmp/random-seed exists
-tmp = path.exists( "/var/tmp/random-seed" )
-if tmp:
+if path.exists( "/var/tmp/random-seed" ):
 	system( "/bin/cat /var/tmp/random-seed > /dev/urandom" )
 
 # Set the clock
 print "\x1b[1;37m>>\x1b[0m Setting hardware clock:"
-tmp = path.exists( "/etc/adjtime" )
-if tmp == False:
+if path.exists( "/etc/adjtime" ) == False:
 	system( "/bin/echo \"0.0 0 0.0\" > /etc/adjtime" )
 
 # And set the timezone
 if TIMEZONE != "":
-	tmp = "/bin/ln -sf /usr/share/zoneinfo/"+TIMEZONE
-	system( tmp )
+	system( "/bin/ln -sf /usr/share/zoneinfo/"+TIMEZONE )
 
 system( "/sbin/hwclock --hctosys" )
 print "\x1b[1;32mDONE\x1b[0m"
@@ -108,15 +107,13 @@ print "\x1b[1;32mDONE\x1b[0m"
 # Load console font (OPTIONAL)
 if FONT != "":
 	print "\x1b[1;37m>>\x1b[0mSetting console font to",FONT+":"
-	tmp = "/usr/bin/setfont "+FONT
-	system( tmp )
+	system( "/usr/bin/setfont "+FONT )
 	print "\x1b[1;32mDONE\x1b[0m"
 
 if KEYMAP != "":
 	print "\x1b[1;37m>>\x1b[0m Setting keymap to",KEYMAP+":"
-	tmp = "/bin/loadkeys -q "+KEYMAP
-	system( tmp )
-	print "\x1b[1;32mDONE\x1b[0m\n"
+	system( "/bin/loadkeys -q "+KEYMAP )
+	print "\x1b[1;32mDONE\x1b[0m"
 
 # After 15 minutes idle, blank the screen
 system( "/usr/bin/setterm -blank 15" )
@@ -126,9 +123,8 @@ if MODULES[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Loading modules:"
 	for module in MODULES:
 		print "\x1b[1;36m>>>\x1b[0m Loading module ",module
-		tmp = "/sbin/modprobe "+module
-		system( tmp )
-	print "\x1b[1;32mDONE\x1b[0m\n"
+		system( "/sbin/modprobe "+module )
+	print "\x1b[1;32mDONE\x1b[0m"
 
 # End of script
 #
