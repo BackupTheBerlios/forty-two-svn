@@ -12,6 +12,10 @@ from os import system
 # This array contains all arguments passed to the script
 from sys import argv
 
+# Put services this service depends on in the NEEDS array
+# For example, NFS would depend on net
+NEEDS = [ "service1", "service2" ]
+
 # If the argument passed is start
 if argv[1] == "start":
 	# Start the daemon
