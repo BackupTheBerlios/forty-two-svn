@@ -56,7 +56,7 @@ print "\x1b[1;32mDONE\x1b[0m"
 
 system( "/usr/bin/clear" )
 print "\x1b[1;37mPynux v0.01 - Booted by Forty-two\x1b[0m"
-print "\x1b[1;37mWelcome to",initconf.hostname+"!\x1b[0m" 
+print "\x1b[1;37mWelcome to",HOSTNAME+"!\x1b[0m" 
 
 # End of file
 #
