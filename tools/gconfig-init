@@ -12,8 +12,56 @@ class MainWindow:
 		gtk.main_quit()
 		return gtk.FALSE
 
-	def help_click( self, widget, data=None):
-		print "Yippeee!"
+	def close_help( self, widget, data=None ):
+		self.window2.hide()
+
+	def help_click( self, widget, data="1" ):
+
+		# Create the help window
+		self.window2 = gtk.Window()
+		self.window2.set_title( "gConfig-Init - Help" )
+		self.window2.connect( "delete_event", self.close_help )
+		self.window2.set_border_width( 10 )
+
+		# Create a table to store it
+		self.help_table = gtk.Table( 4, 3, gtk.FALSE )
+		self.help_table.set_row_spacings( 10 )
+		self.help_table.set_col_spacings( 5 )
+		self.window2.add( self.help_table )
+
+		# Create info for it
+		if data == "1":
+
+			# Create Timezone help info
+			self.help_label1 = gtk.Label( "Timezone: Set this to your local timezone. Timezone's can be found in /usr/share/zoneinfo." )
+			self.help_label1.set_line_wrap( gtk.TRUE )
+			self.help_label1.set_justify( gtk.JUSTIFY_LEFT )
+			self.help_table.attach( self.help_label1, 0, 3, 0, 1 )
+			self.help_label1.show()
+			
+			# Create Font help info
+			self.help_label2 = gtk.Label( "Font: If you require a special console font (you are non-English), enter it here. Console fonts can be found in /usr/lib/kbd." )
+			self.help_label2.set_line_wrap( gtk.TRUE )
+			self.help_label2.set_justify( gtk.JUSTIFY_LEFT )
+			self.help_table.attach( self.help_label2, 0, 3, 1, 2 )
+			self.help_label2.show()
+			
+			# Create Keymap help info
+			self.help_label3 = gtk.Label( "Keymap: If you require a special keymap (non-US or Dvorak), input it here. Keymaps can be found in /usr/lib/kbd." )
+			self.help_label3.set_line_wrap( gtk.TRUE )
+			self.help_label3.set_justify( gtk.JUSTIFY_LEFT )
+			self.help_table.attach( self.help_label3, 0, 3, 2, 3 )
+			self.help_label3.show()
+			
+		# Set 'Close' button
+		self.close_button.connect( "clicked", self.close_help )
+		self.help_table.attach( self.close_button, 1, 2, 3, 4 )
+		self.close_button.show()
+
+		# Show everything
+		self.help_table.show()
+		self.window2.show()
+			
 
 	def forward_clicked( self, widget, data=None ):
 		if data == "part 1":
@@ -104,6 +152,9 @@ class MainWindow:
 
 		# Make a 'Help' button
 		self.help_button = gtk.Button( "Help", gtk.STOCK_HELP )
+
+		# Make a 'Close' button
+		self.close_button = gtk.Button( "Close", gtk.STOCK_CLOSE )
 
 		# Attach everything to the table
 		self.main_table.attach( self.gimage, 0, 4, 0, 1 )
