@@ -5,7 +5,7 @@
 # Released under a BSD licence
 # coded by sethgeekx86
 #
-# Version 0.12b - Should work now =o)
+# Version 0.12c - Should work now =o)
 #
 
 # Load python system module
@@ -28,7 +28,7 @@ print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is shutting down the system\x1b[
 if initconf.daemons[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
 	for daemon in initconf.daemons:
-		print "\x1b[1;37m>>>\x1b[0m Stopping",daemon
+		print "\x1b[1;36m>>>\x1b[0m Stopping",daemon
 		tmp = "/etc/rc.d/"+daemon+" stop &> /tmp/rc.$$"
 		system( tmp )
 		tmp = "/usr/bin/logger -t "+daemon+" -f /tmp/rc.$$"

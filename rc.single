@@ -1,12 +1,11 @@
 #!/usr/bin/python
 #
 # /etc/rc.single: single-user startup script
-# I hope no one ever uses this
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD licence
 # coded by sethgeekx86
 #
-# Version 0.1a - *should* work... not positive, though...
+# Version 0.1c - *should* work... not positive, though...
 #
 
 # Load python system modules
@@ -17,6 +16,7 @@ import initconf
 
 prelevel = system( "/bin/echo $PRELEVEL" )
 N = system( "/bin/echo $N" )
+runlevel = system( "/bin/echo $RUNLEVEL" )
 
 if prelevel == 2:
 	if initconf.daemons[0] != "":
