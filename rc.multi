@@ -23,7 +23,7 @@ import initconf
 
 
 # Start services
-if initconf.daemons != "":
+if initconf.daemons[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Starting daemons:"
 	for daemon in initconf.daemons:
 		print "\x1b[1;36m>>>\x1b[0m Starting",daemon
