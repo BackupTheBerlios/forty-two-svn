@@ -23,8 +23,8 @@ import initconf
 
 
 # Start services
-if initconf.services != "":
-	for daemon in initconf.services:
+if initconf.daemons != "":
+	for daemon in initconf.daemons:
 		print "Starting",daemon+"... "
 		# Make sure there's a script for it
 		tmplocation = "/etc/rc.d/",daemon
