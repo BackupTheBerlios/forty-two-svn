@@ -4,7 +4,7 @@
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD license
 # 
-# Version 0.12b - Works and is pretty :)
+# Version 0.12c - Works and is pretty :)
 #
 # Needed from /etc/initconf.py:
 # services - Array of daemons
@@ -64,8 +64,7 @@ print "\x1b[1;32mDONE\x1b[0m"
 
 system( "/usr/bin/clear" )
 print "\x1b[1;37mPynux v0.01 - Booted by Forty-two\x1b[0m"
-print "\x1b[1;37mhttp://undeadpenguin.org/pynuxtmp\x1b[0m"
-print "\x1b[1;37mWelcome to",initconf.hostname+"!\x1b[0m\n" 
+print "\x1b[1;37mWelcome to",initconf.hostname+"!\x1b[0m" 
 
 # End of file
 #

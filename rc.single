@@ -6,7 +6,7 @@
 # Released under a BSD licence
 # coded by sethgeekx86
 #
-# Version 0.1 - *should* work... not positive, though...
+# Version 0.1a - *should* work... not positive, though...
 #
 
 # Load python system modules
@@ -15,19 +15,22 @@ from os import system
 # Load configuration from initconf.py
 import initconf
 
-prelevel = system( "/usr/bin/echo $PRELEVEL" )
-N = system( "/usr/bin/echo $N" )
+prelevel = system( "/bin/echo $PRELEVEL" )
+N = system( "/bin/echo $N" )
 
 if prelevel == 2:
 	if initconf.daemons[0] != "":
+		print "\x1b[1;37m>>\x1b[0m Starting daemons:"
 		for daemon in initconf.daemons:
-			tmp = "/etc/rc.d/"+daemon,"stop &> /tmp/rc.$$"
+			print "\x1b[1;36m>>>\x1b[0m Starting",daemon
+			tmp = "/etc/rc.d/"+daemon+" stop &> /tmp/rc.$$"
 			system( tmp )
-			tmp = "/usr/bin/logger -t",service,"-f /tmp/rc.$$"
+			tmp = "/usr/bin/logger -t "+service+" -f /tmp/rc.$$"
 			system( tmp )
 			system( "/bin/rm -f /tmp/rc.$$" )
+		print "\x1b[1;32mDONE\x1b[0m\n"
 		
-# n?
+# If $PRELEVEL equals $N
 if prevlevel == N: 
 	# Terminate all processes
 	system( "/sbin/killall5 -15 &> /dev/null" )
@@ -37,14 +40,14 @@ if prevlevel == N:
 	# Start device management daemon
 	system( "/sbin/devfsd /dev" )
 
-	# Start log daemons
-	system( "/usr/sbin/syslogd" )
-	system( "/usr/sbin/klogd -c 4" )
-
 # Enter single-user mode , if runlevel is = to 1
 if runlevel == 1:
 	system( "exec /sbin/init -t1 S" )
 else:
-	print "\033[1;31;40mERROR: Could not determine runlevel\033[0m\n"
+	print "\x1b[1;31mERROR: Could not determine runlevel!\x1b[0m\n"
+	
+system( "/usr/bin/clear" )
+print "\x1b[1;37mPynux v0.01 - Booted by Forty-two\x1b[0m"
+print "\x1b[1;31mSINGLE USER MODE\x1b[0m"
 
 # End of file

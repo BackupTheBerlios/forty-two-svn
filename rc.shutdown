@@ -5,7 +5,7 @@
 # Released under a BSD licence
 # coded by sethgeekx86
 #
-# Version 0.12a - Should work now =o)
+# Version 0.12b - Should work now =o)
 #
 
 # Load python system module
@@ -51,7 +51,7 @@ system ( "/sbin/hwclock --systohc" )
 system ( "/sbin/halt -w" )
 
 # Turn off swap
-print "\x1b[1;37m>>\x1b[0 Unmounting swap:"
+print "\x1b[1;37m>>\x1b[0m Unmounting swap:"
 system ( "/sbin/swapoff -a" )
 print "\x1b[1;32mDONE\x1b[0m\n"
 
@@ -64,7 +64,7 @@ print "\x1b[1;32mDONE\x1b[0m\n"
 system ( "/bin/mount -n -o remount,ro /" )
 
 # Power off or reboot
-runlevel = system( "/usr/bin/echo $RUNLEVEL" )
+runlevel = system( "/bin/echo $RUNLEVEL" )
 if runlevel == 2:
  system( "/sbin/poweroff -d -f -i" )
 else:
