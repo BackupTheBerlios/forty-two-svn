@@ -1,19 +1,43 @@
-# Task list for Forty-two
-# Prefix whatever you are working on with a !
-# Prefix completed stuff with a #
-# Also, write your name after it
-# Add comments with the syntax // after your name
++----------------------------------------------------------------+
+|                                                                |
+|               Task list - v0.5 Forty-two                       |
+|                                                                |
++================================================================+
+| // Start comments with a //                                    |
+| // If you want to do something, write - [your name] after it   |
+| // If you finish it but have not tested it and/or it doesnt't  |
+| // work right, put a # before it. If you've started it but are |
+| // not done, put a !.                                          |
+|                                                                |
+| // REMEMBER! Always run svn update before editing any code!    |
+| // You don't know if someone else has changed it!              |
+|                                                                |
++================================================================+
 
-#rc - undeadpenguin // DONE
-#rc.conf - undeadpenguin // DONE
-#rc.multi - undeadpenguin // DONE
-#rc.shutdown  seth // DONE 
-#rc.single - seth // DONE
-#inittab - undeadpenguin // DONE
-!init - undeadpenguin // Have to find some init code to look at...
+!Fix rc.single; as of now it boots almost exactly the same as rc.multi - undeadpenguin
 
-----------+
-rc.d/crond|
-rc.d/inetd|<-- Do not do yet!
-rc.d/net  |
-----------+
+Parallel boot; Do not try to automatically sort out deps yet
+
+Docs for:
+ rc
+ rc.multi
+ rc.shutdown
+ rc.single // Must be updated first
+ inittab
+ generic "Forty-two" man page
+
+/etc/rc.d scripts for:
+ syslog-ng
+ hotplug
+ openssh
+ vixie-cron
+ net
+ // Any other daemons you guys feel like "porting"
+
+Make runlevel 5 boot to X
+
+Add a login_manager = "" variable to initconf.py.
+
+ncurses installer? At least an installer that prompts you.
+
+And of course, fix all the bugs you find!
