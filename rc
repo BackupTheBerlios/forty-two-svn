@@ -5,12 +5,18 @@
 # Released under a BSD license
 #
 
+#
+# Version 0.01
+# Last change: backup added (line 135)
+#
+
 # Variables needed from /etc/rc.conf:
 # timezone
 # hostname
 # font (console font)
 # keymap
 # modules (_ARRAY_ of modules)
+# backups (_ARRAY_ of files to back up)
 
 # Load the system module
 from os import system
@@ -125,6 +131,11 @@ system( "/usr/bin/setterm -blank 15" )
 for module in modules:
 	print "Loading module:",module
 	tmp = "/sbin/depmod",module
+	system( tmp )
+
+for file in backups:
+	print "Backing up:",file
+	tmp = "cp",backup,"/var/backup/"
 	system( tmp )
 
 # End of script
