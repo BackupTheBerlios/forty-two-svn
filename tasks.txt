@@ -8,7 +8,7 @@
 #rc.conf - undeadpenguin // Basic rc.conf (XML)
 rc.modules
 rc.multi
-rc.shutdown
+rc.shutdown  seth // i will give it a try!
 rc.single
 rc.d/crond
 rc.d/inetd
