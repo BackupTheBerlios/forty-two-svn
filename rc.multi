@@ -1,10 +1,12 @@
 #!/usr/bin/python
 #
 # /etc/rc.multi - Multi-user startup script (runlevel 3)
-# Copyright 2004 Forty-two
-# For more information on Forty-two see http://forty-two.berlios.de
+# Copyright 2004 Forty-two <http://forty-two.berlios.de>
+# Released under a BSD license
 # 
-# Needed from rc.conf:
+# Version 0.1 - Should be able to boot :)
+#
+# Needed from /etc/initconf.py:
 # services - Array of daemons
 # backup - yes or no as to whether to back up or not
 # backups - Array of files to backup
@@ -16,15 +18,13 @@ from os import system
 # Load path module
 from os import path
 
-#
-# Here we would read rc.conf
-# I don't know how to do that so we're skipping it for now
-#
+# Import variables from /etc/initconf.py
+import initconf.py
 
 
 # Start services
-if services != "":
-	for daemon in services:
+if initconf.services != "":
+	for daemon in initconf.services:
 		print "Starting",daemon+"... "
 		# Make sure there's a script for it
 		tmplocation = "/etc/rc.d/",daemon
@@ -45,11 +45,11 @@ if tmp:
 	system( "bash /etc/rc.local" )
 
 # Backup files if necessary
-if backup == "yes":
-	if backups != "":
-		for file in backups:
+if initconf.backup == "yes":
+	if initconf.backups != "":
+		for file in initconf.backups:
 			print "Backing up:",file+"... "
-			tmp = "cp",backup,"/var/backup"
+			tmp = "cp",file,"/var/backup"
 			system( tmp )
 			print "\033[1;32;40mDONE\033[0m\n"
 	else:

@@ -1,23 +1,22 @@
 #!/usr/bin/python
 #
 # /etc/rc.shutdown: system shutdown script
-#Copyright 2004 Forty-two <http://forty-two.berlios.de>
+# Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD licence
 # coded by sethgeekx86
-
-#todo:
-# Finished :)
+#
+# Version 0.1 - Should work now =o)
 #
 
-# Load python system modules
+# Load python system module
 from os import system
+
+# Load path module
 from os import path
 
 
-# Load configuration   
-#
-# Here we would have to parse rc.conf's XML
-#
+# Load configuration from /etc/initconf.py
+import initconf.py
 
 # Set linefeed mode to avoid staircase effect
 system( "/bin/stty onlcr" )
@@ -26,19 +25,17 @@ system( "/bin/stty onlcr" )
 
 print "The system is shuting down.  Please wait...\n"
 
-######################################################################
-# Shutdown services
-if services != "":
-	for daemon in services:
-		print "Stopping",daemon,"\n"
+# Kill services (daemons)
+if initconf.daemons[0] != "":
+	for daemon in initconf.daemons:
+		print "Stopping",daemon+"..."
 		tmp = "/etc/rc.d/"+daemon,"stop &> /tmp/rc.$$"
 		system( tmp )
 		tmp = "/usr/bin/logger -t",daemon,"-f /tmp/rc.$$"
 		system( tmp )
 		system( /bin/rm -f /tmp/rc.$$ )
+		print "\033[1;32;40mDONE\033[0m\n"
 
-		
-################################################################################
 # Terminate all processes
 system ( "/sbin/killall5 -15 &> /dev/null" )
 system ( "/usr/bin/sleep 5" )
@@ -54,15 +51,20 @@ system ( "/sbin/hwclock --systohc" )
 system ( "/sbin/halt -w" )
 
 # Turn off swap
+print "Unmounting swap... "
 system ( "/sbin/swapoff -a" )
+print "\033[1;32;40mDONE\033[0m\n"
 
 # Umount file systems
+print "Unmounting all filesystems... "
 system ( "/bin/umount -a" )
+print "\033[1;32;40mDONE\033[0m\n"
 
 # Remount root filesystem read-only
 system ( "/bin/mount -n -o remount,ro /" )
 
 # Power off or reboot
+runlevel = system( "/usr/bin/echo $RUNLEVEL" )
 if runlevel == 2:
  system( "/sbin/poweroff -d -f -i" )
 else:

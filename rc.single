@@ -4,45 +4,33 @@
 # I hope no one ever uses this
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD licence
-#coded by sethgeekx86
+# coded by sethgeekx86
+#
+# Version 0.1 - *should* work... not positive, though...
+#
 
 # Load python system modules
 from os import system
-from os import path
 
-#todo
-# xml part 19
-# line 55 , the error mesage , we could have it loop , try the script again.
-# line 39 , 51 , i not sure what N is and if it will work
-# line 26-37 i do not know where services is , sorry if the code looks have asked , i don't
-#know where it comes from
+# Load configuration from initconf.py
+import initconf
 
-#
-# Here is where we need to parse the XML from rc.conf
-# I dunno how to do that as of now...
-#
+prelevel = system( "/usr/bin/echo $PRELEVEL" )
+N = system( "/usr/bin/echo $N" )
 
-
-
-if [ "$PREVLEVEL" = "2" ]; then
-	# Shutdown services
-	if ${SERVICES[*]}: then
+if prelevel == 2:
+	if initconf.daemons[0] != "":
+		for daemon in initconf.daemons:
+			tmp = "/etc/rc.d/"+daemon,"stop &> /tmp/rc.$$"
+			system( tmp )
+			tmp = "/usr/bin/logger -t",service,"-f /tmp/rc.$$"
+			system( tmp )
+			system( "/bin/rm -f /tmp/rc.$$" )
 		
-		for service in "${SERVICES[@]}":
-			R_SERVICES=($service ${R_SERVICES[@]})
-		
-		for service in "${R_SERVICES[@]}" :
-			
-			system ( "/etc/rc.d/$service stop &> /tmp/rc.$$" )
-			system ( "/usr/bin/logger -t $service -f /tmp/rc.$$" )
-			system ( "/bin/rm -f /tmp/rc.$$" )
-		
-	
-
 # n?
-if prevlevel = N: 
+if prevlevel == N: 
 	# Terminate all processes
-	system ( "/sbin/killall5 -15 &> /dev/null" )
+	system( "/sbin/killall5 -15 &> /dev/null" )
 	system( "/usr/bin/sleep 5" )
 	system( "/sbin/killall5 -9 &> /dev/null" )
 
@@ -55,8 +43,8 @@ if prevlevel = N:
 
 # Enter single-user mode , if runlevel is = to 1
 if runlevel == 1:
- system( "exec /sbin/init -t1 S" )
+	system( "exec /sbin/init -t1 S" )
 else:
-print "error"
+	print "\033[1;31;40mERROR: Could not determine runlevel\033[0m\n"
 
 # End of file
