@@ -5,7 +5,7 @@
 # Add comments with the syntax // after your name
 
 !rc - undeadpenguin // Just have to write an rc.conf so I can grab some variables from it
-!rc.conf - undeadpenguin // Skeleton rc.conf (XML)
+#rc.conf - undeadpenguin // Basic rc.conf (XML)
 rc.modules
 rc.multi
 rc.shutdown
