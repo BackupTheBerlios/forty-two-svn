@@ -18,16 +18,22 @@ from sys import argv
 
 def start():
 	print "\x1b[1;36m>>>\x1b[0m Starting net:"
-	for interface in INTERFACES:
-		
+	counter = 0
+	interface_ = INTERFACES.keys()
+	for interface in interface_:
+		print "Interface: "+interface
 		# If the interface is set to use DHCP
-		if interface == "dhcp":
+		if INTERFACES[interface] == "dhcp":
+			print "Trying dhcp for device "+interface
 			system( "rm -f /etc/dhcpc/dhcpcd-"+interface+".{pid,cache} >/dev/null 2>&1" )
-			system( "/usr/sbin/dhcpcd -t 10 -h "+HOSTNAME+" "+interface )
+			print "DHCPcd'ing it"
+			system( "/sbin/dhcpcd -t 10 -h "+HOSTNAME+" "+interface )
 		
 		# Otherwise... use ifconfig to start it
 		else:
+			print "Trying ifconfig for device "+interface
 			system( "/sbin/ifconfig "+interface )
+		counter = counter + 1
 	print "\x1b[1;32mDONE\x1b[0m"
 
 def stop():

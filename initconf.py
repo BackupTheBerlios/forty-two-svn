@@ -16,11 +16,11 @@
 # Set the timezone below
 # Timezones can be found in /usr/share/zoneinfo
 # Example: TIMEZONE = "US/Eastern"
-TIMEZONE = "GMT"
+TIMEZONE = "US/Eastern"
 
 # Set the hostname below
 # Example: HOSTNAME = "myhost"
-HOSTNAME = "myhost"
+HOSTNAME = "zero"
 
 # Change the default console font here
 # Example: FONT = "font name"
@@ -30,28 +30,14 @@ FONT = ""
 # Example: KEYMAP = "keymap name"
 KEYMAP = ""
 
-# Configure the network here
-# Set the loopback address
-# Leaving it as 127.0.0.1 is recommended
-lo = "lo 127.0.0.1"
-
-# Now configure devices
-# If you do not have DHCP, put in here whatever
-# you would normally put in when you do a
-# /sbin/ifconfig (to start the network)
-# If you do have DHCP, just say eth0 = "dhcp"
-#
-# If you have eth1, eth2, etc. state them here, as well
-eth0 = "dhcp"
-
 # List interface to start on boot here
 # For example, it could be something like:
 # INTERFACES = [ lo, eth0, eth1 ]
-INTERFACES = [ lo, eth0 ]
+INTERFACES = { "lo":"lo 127.0.0.1", "eth0":"dhcp" }
 
 # Set modules to load on boot here
 # Example: MODULES = [ "tulip", "i810_audio", "usb-storage" ]
-MODULES = [ "ide-scsi" ]
+MODULES = [ "ide-scsi", "sundance" ]
 
 # If you would like to have files backed up to /var/backup on boot, say yes here
 # Example: BACKUP = "yes"
@@ -66,7 +52,7 @@ BACKUPS = [ "/etc/initconf", "/etc/fstab" ]
 # Use the name that its /etc/rc.d/ script uses
 # For example, Apache is httpd
 # Example of usage: DAEMONS = [ "syslogd-ng", "crond", "net" ]
-DAEMONS = [ "syslogd-ng", "crond", "net" ]
+DAEMONS = [ "syslogd", "crond", "net" ]
 
 # End of file
 # 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# example of pyGTK with tables
+# GTK+ >= 2.0 configuration utility for Forty-two (init scripts)
 #
 
 import pygtk
@@ -68,13 +68,47 @@ class MainWindow:
 			self.part1()
 		
 		if data == "part 2":
+
+			# Set proper variables
+			self.main_table.remove( self.text1 )
 			TIMEZONE = self.text1.get_text()
+			self.main_table.remove( self.text2 )
 			FONT = self.text2.get_text()
-			KEYMAP = self.text3.get_text()
-			print TIMEZONE,FONT,KEYMAP
+			self.main_table.remove( self.text3 )
+
+	def open_file_ok( self, widget, data="timezone" ):
+
+		# Set 'filename' to the file they have selected
+		self.filename = self.filesel1.get_filename()
+		
+		if data == "timezone":
+			self.text1.set_text( self.filename )
+	
+	def file_open( self, widget, data="Timezone" ):
+		
+		# Create the fileselection box
+		self.filesel1 = gtk.FileSelection( data )
+
+		if( data == "Timezone" ):
+			self.filesel1.set_filename( "/usr/share/zoneinfo/" )
+			self.filesel1.ok_button.connect( "clicked", self.open_file_ok, "timezone" )
+			
+		elif( data == "Font" ):
+			self.filesel1.set_filename( "/usr/share/kbd/consolefonts/" )
+			self.filesel1.ok_button.connect( "clicked", self.open_file_ok, "font" )
+		
+		elif( data == "Keymap" ):
+			self.filesel1.set_filename( "/usr/share/kdb/keymaps/" )
+			self.filesel1.ok_button.connect( "clicked", self.open_file_ok, "keymap" )
+
+		
+		# Show/hide everything
+		self.filesel1.cancel_button.hide()
+		self.filesel1.show()
 
 	def part1( self ):
 		self.window1.hide()
+		self.window1.set_default_size( 371, 203 )
 		
 		# Remove unnecessary items from table
 		self.main_table.remove( self.gimage )
@@ -87,6 +121,14 @@ class MainWindow:
 		self.text1 = gtk.Entry( 0 )
 		self.text2 = gtk.Entry( 0 )
 		self.text3 = gtk.Entry( 0 )
+
+		# Make 'Open' buttons
+		self.obutton1 = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.obutton1.connect( "clicked", self.file_open, "Timezone" )
+		self.obutton2 = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.obutton2.connect( "clicked", self.file_open, "Font" )
+		self.obutton3 = gtk.Button( "Open", gtk.STOCK_OPEN )
+		self.obutton3.connect( "clicked", self.file_open, "Keymap" )
 		
 		# Set label 1
 		self.label1.set_text( "Font:" )
@@ -100,10 +142,13 @@ class MainWindow:
 		self.main_table.remove( self.quit_button)
 		self.main_table.attach( self.label2, 0, 1, 0, 1 )
 		self.main_table.attach( self.text1, 1, 3, 0, 1 )
+		self.main_table.attach( self.obutton1, 3, 4, 0, 1 )
 		self.main_table.attach( self.label1, 0, 1, 1, 2 )
 		self.main_table.attach( self.text2, 1, 3, 1, 2 )
+		self.main_table.attach( self.obutton2, 3, 4, 1, 2 )
 		self.main_table.attach( self.label3, 0, 1, 2, 3 )
 		self.main_table.attach( self.text3, 1, 3, 2, 3 )
+		self.main_table.attach( self.obutton3, 3, 4, 2, 3 )
 		self.main_table.attach( self.help_button, 2, 3, 3, 4 )
 		self.main_table.attach( self.quit_button, 0, 1, 3, 4 )
 		
@@ -114,6 +159,9 @@ class MainWindow:
 		self.label3.show()
 		self.text3.show()
 		self.help_button.show()
+		self.obutton1.show()
+		self.obutton2.show()
+		self.obutton3.show()
 		self.window1.show()
 		
 
