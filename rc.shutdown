@@ -5,7 +5,7 @@
 # Released under a BSD licence
 # coded by sethgeekx86
 #
-# Version 0.12 - Should work now =o)
+# Version 0.12a - Should work now =o)
 #
 
 # Load python system module
@@ -29,9 +29,9 @@ print "The system is shuting down.  Please wait...\n"
 if initconf.daemons[0] != "":
 	for daemon in initconf.daemons:
 		print "Stopping",daemon+"..."
-		tmp = "/etc/rc.d/"+daemon,"stop &> /tmp/rc.$$"
+		tmp = "/etc/rc.d/"+daemon+" stop &> /tmp/rc.$$"
 		system( tmp )
-		tmp = "/usr/bin/logger -t",daemon,"-f /tmp/rc.$$"
+		tmp = "/usr/bin/logger -t "+daemon+" -f /tmp/rc.$$"
 		system( tmp )
 		system( "/bin/rm -f /tmp/rc.$$" )
 		print "\033[1;32;40mDONE\033[0m\n"
