@@ -1,0 +1,75 @@
+#!/usr/bin/python
+#
+# /etc/rc.d/net - Network start/stop/restart script
+# For use with Forty-two <http://forty-two.berlios.de>
+# Released under a BSD license
+#
+# Editors: undeadpenguin
+#
+
+# Import initconf.py variables
+from initconf import HOSTNAME,INTERFACES
+
+for interface in INTERACES:
+	# Get interfaces to be loaded from initconf.py
+	from initconf import interface
+
+# Import system and path modules
+from os import system,path
+
+# Import argv module
+from sys import argv
+
+def start():
+	print "\x1b[1;36m>>>\x1b[0m Starting net:"
+	for interface in INTERFACES:
+		
+		# If the interface is set to use DHCP
+		if interface == "dhcp":
+			system( "rm -f /etc/dhcpc/dhcpcd-"+interface+".{pid,cache} >/dev/null 2>&1" )
+			system( "/usr/sbin/dhcpcd -t 10 -h "+HOSTNAME+" "+interface )
+		
+		# Otherwise... use ifconfig to start it
+		else:
+			system( "/sbin/ifconfig "+interface )
+	print "\x1b[1;32mDONE\x1b[0m"
+
+def stop():
+	print "\x1b[1;36m>>>\x1b[0m Stopping net:"
+	for interface in INTERFACES:
+		
+		# If the interface is set to use DHCP
+		if interface == "dhcp":
+
+			# If the interface was started using DHCP
+			if path.exists( "/etc/dhcpc/dhcpcd-"+interface+".pid" ):
+				system( "/bin/kill `cat /etc/dhcpc/dhcpcd-"+interface+".pid`" )
+
+			# If it wasn't, treat it like a normal connection
+			else:
+				system( "/sbin/ifconfig "+interface+" down" )
+		
+		# Otherwise... use ifconfig to put it down
+		else:
+			system( "/sbin/ifconfig "+interface+" down" )
+	print "\x1b[1;32mDONE\x1b[0m"
+
+# If the argument is start
+if argv[1] == "start":
+	start()
+
+# If the argument is stop
+elif argv[1] == "stop":
+	stop()
+
+# If the argument is restart
+elif argv[1] == "restart":
+	stop()
+	start()
+
+# If it's none of the above...
+else:
+	print "\x1b[1;31mERROR:\x1b[0m No such argument \""+argv[1]+"\""
+
+# End of file
+#

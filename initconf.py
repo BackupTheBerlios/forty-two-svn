@@ -33,7 +33,7 @@ KEYMAP = ""
 # Configure the network here
 # Set the loopback address
 # Leaving it as 127.0.0.1 is recommended
-LO = "lo 127.0.0.1"
+lo = "lo 127.0.0.1"
 
 # Now configure devices
 # If you do not have DHCP, put in here whatever
@@ -46,8 +46,8 @@ eth0 = "dhcp"
 
 # List interface to start on boot here
 # For example, it could be something like:
-# INTERFACES = [ "lo", "eth0", "eth1" ]
-INTERFACES = [ "lo", "eth0" ]
+# INTERFACES = [ lo, eth0, eth1 ]
+INTERFACES = [ lo, eth0 ]
 
 # Set modules to load on boot here
 # Example: MODULES = [ "tulip", "i810_audio", "usb-storage" ]
