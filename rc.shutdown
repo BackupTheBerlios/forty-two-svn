@@ -29,11 +29,8 @@ if initconf.daemons[0] != "":
 	print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
 	for daemon in initconf.daemons:
 		print "\x1b[1;36m>>>\x1b[0m Stopping",daemon
-		tmp = "/etc/rc.d/"+daemon+" stop &> /tmp/rc.$$"
+		tmp = "/etc/rc.d/"+daemon+" stop"
 		system( tmp )
-		tmp = "/usr/bin/logger -t "+daemon+" -f /tmp/rc.$$"
-		system( tmp )
-		system( "/bin/rm -f /tmp/rc.$$" )
 	print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Terminate all processes

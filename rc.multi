@@ -35,12 +35,6 @@ if initconf.daemons[0] != "":
 			# Start the daemon
 			tmp = "/etc/rc.d/"+daemon+" start"
 			system( tmp )
-			tmp = "echo \""+daemon+" loaded.\" > /tmp/rc.$$"
-			system( tmp )
-			# Log it and clean up
-			tmp = "/usr/bin/logger -t "+daemon+" -f /tmp/rc.$$"
-			system( tmp )
-			system( "/bin/rm -f /tmp/rc.$$" )
 			print "\x1b[1;32mDONE\x1b[0m\n"
 		else:
 			print "\x1b[1;31mERROR: No service",daemon+"!\x1b[0m\n"
