@@ -200,6 +200,36 @@ class MainWindow:
 		self.DAEMONS.remove( service_name )
 		self.services_rm_combo.set_popdown_strings( self.DAEMONS )
 	
+	# Called to open an "OK" window dialog when you're done
+	def ok_window( self ):
+
+		# Create the window
+		self.ok_window = gtk.Window( gtk.WINDOW_TOPLEVEL )
+		self.ok_window.set_title( "OK" )
+		self.ok_window.connect( "delete_event", self.delete_event )
+
+		# Create everything it needs
+		self.ok_window_vbox = gtk.VBox( gtk.FALSE, 10 )
+		self.ok_window.add( self.ok_window_vbox )
+		self.ok_window_congrats = gtk.Label( "Congratulations! gConfig-Init has successfully written the following to /etc/initconf.py. You may now hit 'OK' to quit the program." )
+		self.ok_window_congrats.set_line_wrap( gtk.TRUE )
+		self.ok_window_written = gtk.Label( self.write )
+		self.ok_window_written.set_line_wrap( gtk.TRUE )
+		self.ok_window_button = gtk.Button( "OK", gtk.STOCK_OK )
+		self.ok_window_button.connect( "clicked", self.delete_event, "die!" )
+
+		# Add stuff to the vbox
+		self.ok_window_vbox.pack_start( self.ok_window_congrats, gtk.FALSE, gtk.FALSE, 10 )
+		self.ok_window_vbox.pack_start( self.ok_window_written, gtk.FALSE, gtk.FALSE, 10 )
+		self.ok_window_vbox.pack_end( self.ok_window_button, gtk.FALSE, gtk.FALSE, 10 )
+
+		# show everything
+		self.ok_window_congrats.show()
+		self.ok_window_written.show()
+		self.ok_window_button.show()
+		self.ok_window_vbox.show()
+		self.ok_window.show()
+	
 	# Writes all the information to the disc
 	def write_info( self, widget ):
 
@@ -233,7 +263,7 @@ class MainWindow:
 		self.counter = 0
 		self.count = len( self.DAEMONS ) - 1
 		self.SERVICES_ = "DAEMONS = [ "
-		while self.count <= self.counter:
+		while self.counter <= self.count:
 			self.SERVICES_ = self.SERVICES_ + "\""+self.DAEMONS[ self.counter ]+"\""
 			if self.count != self.counter:
 				self.SERVICES_ = self.SERVICES_ + ", "
@@ -251,6 +281,9 @@ class MainWindow:
 		self.initconf = file( "/home/kyle/devel/pynux/forty-two/initconf.py", "w" ) # CHANGEME
 		self.initconf.write( self.write )
 		self.initconf.close
+
+		# Call the ok_window function
+		self.ok_window()
 		
 	# Creates the notebook
 	def notebook_create( self ):
