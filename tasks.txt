@@ -1,0 +1,9 @@
+!rc - undeadpenguin
+rc.conf
+rc.modules
+rc.multi
+rc.shutdown
+rc.single
+rc.d/crond
+rc.d/inetd
+rc.d/net
