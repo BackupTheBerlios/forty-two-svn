@@ -1,24 +1,15 @@
-#!/usr/bin/python
+#!/bin/bash
 #
 # /etc/rc.shutdown: system shutdown script
-#Copyright 2004 Forty-two <http://forty-two.berlios.de>
-# Released under a BSD licence
-# coded by sethgeekx86
-# Load the system module
-# Load python system modules
-from os import system
-from os import path
+#
 
-
-# Load configuration   
-system( ". /etc/rc.conf" )
+# Load configuration
+. /etc/rc.conf
 
 # Set linefeed mode to avoid staircase effect
-system( "/bin/stty onlcr" )
+/bin/stty onlcr
 
-
-
-print "The system is shuting down.  Please wait......\n"
+echo "The system is coming down.  Please wait."
 
 if [ "$PREVLEVEL" = "2" ]; then
 	# Shutdown services
@@ -35,27 +26,27 @@ if [ "$PREVLEVEL" = "2" ]; then
 fi
 
 # Terminate all processes
-system ( "/sbin/killall5 -15 &> /dev/null" )
-system ( "/usr/bin/sleep 5" )
-system ( "/sbin/killall5 -9 &> /dev/null" )
+/sbin/killall5 -15 &> /dev/null
+/usr/bin/sleep 5
+/sbin/killall5 -9 &> /dev/null
 
 # Save random seed
-system ( "/bin/dd if=/dev/urandom of=/var/tmp/random-seed count=1 2> /dev/null" )
+/bin/dd if=/dev/urandom of=/var/tmp/random-seed count=1 2> /dev/null
 
 # Save system clock
-system ( "/sbin/hwclock --systohc" )
+/sbin/hwclock --systohc
 
 # Write to wtmp file before unmounting
-system ( "/sbin/halt -w" )
+/sbin/halt -w
 
 # Turn off swap
-system ( "/sbin/swapoff -a" )
+/sbin/swapoff -a
 
 # Umount file systems
-system ( "/bin/umount -a" )
+/bin/umount -a
 
 # Remount root filesystem read-only
-system ( "/bin/mount -n -o remount,ro /" )
+/bin/mount -n -o remount,ro /
 
 # Power off or reboot
 if [ "$RUNLEVEL" = "0" ]; then
