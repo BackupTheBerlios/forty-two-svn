@@ -6,8 +6,8 @@
 #
 
 #
-# Version 0.12a - Should be able to boot with it now :)
-# Last change: changed line 136 from , to +
+# Version 0.12b - Boots and should look nice
+# Last change: Made it look pretty
 #
 
 # Variables needed from /etc/initconf.py:
@@ -30,28 +30,30 @@ from sys import exit
 # Load variables from initconf.py
 import initconf
 
-# Print "Forty-two is booting the system" in green
-print "\033[0;32;40mForty-two is booting the system...\033[0m\n"
+# Print ".:: Forty-two is booting the system ::."
+print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is booting the system\x1b[0m \x1b[1;37m::.\x1b[0m"
+print "\n"
 
 # Start devfsd below
 # I would have started pts, but I don't know what daemon to start...
 # We will use PTS eventually.
 
-print "Starting Devfsd... "
+print "\x1b[1;37m>>\x1b[0m Starting Devfsd:"
 system( "/sbin/devfsd /dev" )
-print "\033[1;32;40mDONE\033[0m\n" # DONE in green
+print "\x1b[1;32mDONE\x1b[0m\n" # DONE in green
 
 # Activate swap partition
 
-print "Activating swap... "
+print "\x1b[1;37m>>\x1b[0m Activating swap:"
 system( "/sbin/swapon -a" )
-print "\033[1;32;40mDONE\033[0m\n"
+print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Mount root (/) read-only
 system( "/bin/mount -n -o remount,ro /" )
 
 # Check filesystems for errors
 # This can be commented out to improve boot time
+print "\x1b[1;37m>>\x1b[0m Checking filesystem for errors:"
 system( "/sbin/fsck -A -T -C -a" )
 tmp = system( "/bin/echo $?" ) # The shell variable $?
 if tmp > 1: # If the filesystem is bad
@@ -60,20 +62,20 @@ if tmp > 1: # If the filesystem is bad
 	print "** You will now enter a shell to repair this manually. **\n"
 	print "** You will then be rebooted.                          **\n"
 	print "*********************************************************\n"
-	#Give them a shell then reboot the system
+	# Give them a shell then reboot the system
 	system( "/sbin/sulogin -p" )
-	print "Forty-two is rebooting the system...\n"
 	system( "/bin/umount -a" )
 	system( "/bin/mount -n -o remount,ro /" )
 	system( "/sbin/reboot -f" )
 	exit() # Kill the script
+print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Mount filesystems
-print "Mounting filesystems... "
+print "\x1b[1;37m>>\x1b[0m Mounting filesystems:"
 system( "/bin/mount -n -o remount,rw /" )
 system( "/bin/rm -f /etc/mtab*" )
 system( "/bin/mount -a -O no_netdev" )
-print "\033[1;32;40mDONE\033[0m\n"
+print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Clean up miscellaneous files
 system( "/var/run/utmp" )
@@ -87,11 +89,11 @@ system( "/sbin/ldconfig" )
 
 # Configure hostname
 if initconf.hostname != "":
-	print "Setting hostname to",initconf.hostname+"... "
+	print "\x1b[1;37m>>\x1b[0m Setting hostname to",initconf.hostname+":"
 	#Set the hostname
 	tmp = "/bin/hostname "+initconf.hostname
 	system( tmp )
-	print "\033[1;32;40mDONE\033[0m\n"
+	print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Load random seed
 # Returns true if /var/tmp/random-seed exists
@@ -100,7 +102,7 @@ if tmp:
 	system( "/bin/cat /var/tmp/random-seed > /dev/urandom" )
 
 # Set the clock
-print "Setting hardware clock... "
+print "\x1b[1;37m>>\x1b[0m Setting hardware clock:"
 tmp = path.exists( "/etc/adjtime" )
 if tmp == False:
 	system( "/bin/echo \"0.0 0 0.0\" > /etc/adjtime" )
@@ -111,31 +113,32 @@ if initconf.timezone != "":
 	system( tmp )
 
 system( "/sbin/hwclock --hctosys" )
-print "\033[1;32;40mDONE\033[0m\n"
+print "\x1b[1;32mDONE\x1b[0m"
 
 # Load console font (OPTIONAL)
 if initconf.font != "":
-	print "Setting console font to:",initconf.font+"... "
-	tmp = "/usr/bin/setfont",initconf.font
+	print "\x1b[1;37m>>\x1b[0mSetting console font to",initconf.font+":"
+	tmp = "/usr/bin/setfont "+initconf.font
 	system( tmp )
-	print "\033[1;32;40mDONE\033[0m\n"
+	print "\x1b[1;32mDONE\x1b[0m"
 
 if initconf.keymap != "":
-	print "Setting keymap to:",initconf.keymap+"... "
-	tmp = "/bin/loadkeys -q",initconf.keymap
+	print "\x1b[1;37m>>\x1b[0m Setting keymap to",initconf.keymap+":"
+	tmp = "/bin/loadkeys -q "+initconf.keymap
 	system( tmp )
-	print "\033[1;32;40mDONE\033[0m\n"
+	print "\x1b[1;32mDONE\x1b[0m\n"
 
 # After 15 minutes idle, blank the screen
 system( "/usr/bin/setterm -blank 15" )
 
 # Load modules
 if initconf.modules[0] != "":
+	print "\x1b[1;37m>>\x1b[0m Loading modules:"
 	for module in initconf.modules:
-		print "Loading module:",module+"... "
+		print "\x1b[1;36m>>>\x1b[0m Loading module ",module
 		tmp = "/sbin/modprobe "+module
 		system( tmp )
-		print "\033[1;32;40mDONE\033[0m\n"
+	print "\x1b[1;32mDONE\x1b[0m\n"
 
 # End of script
 #

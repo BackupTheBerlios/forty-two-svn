@@ -21,20 +21,20 @@ import initconf
 # Set linefeed mode to avoid staircase effect
 system( "/bin/stty onlcr" )
 
-
-
-print "The system is shuting down.  Please wait...\n"
+# Print ".:: Forty-two is shutting down the system ::."
+print "\x1b[1;37m.::\x1b[0m \x1b[1;34mForty-two is shutting down the system\x1b[0m \x1b[1;37m::.\x1b[0m\n"
 
 # Kill services (daemons)
 if initconf.daemons[0] != "":
+	print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
 	for daemon in initconf.daemons:
-		print "Stopping",daemon+"..."
+		print "\x1b[1;37m>>>\x1b[0m Stopping",daemon
 		tmp = "/etc/rc.d/"+daemon+" stop &> /tmp/rc.$$"
 		system( tmp )
 		tmp = "/usr/bin/logger -t "+daemon+" -f /tmp/rc.$$"
 		system( tmp )
 		system( "/bin/rm -f /tmp/rc.$$" )
-		print "\033[1;32;40mDONE\033[0m\n"
+	print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Terminate all processes
 system ( "/sbin/killall5 -15 &> /dev/null" )
@@ -51,14 +51,14 @@ system ( "/sbin/hwclock --systohc" )
 system ( "/sbin/halt -w" )
 
 # Turn off swap
-print "Unmounting swap... "
+print "\x1b[1;37m>>\x1b[0 Unmounting swap:"
 system ( "/sbin/swapoff -a" )
-print "\033[1;32;40mDONE\033[0m\n"
+print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Umount file systems
-print "Unmounting all filesystems... "
+print "\x1b[1;37m>>\x1b[0m Unmounting all filesystems:"
 system ( "/bin/umount -a" )
-print "\033[1;32;40mDONE\033[0m\n"
+print "\x1b[1;32mDONE\x1b[0m\n"
 
 # Remount root filesystem read-only
 system ( "/bin/mount -n -o remount,ro /" )
