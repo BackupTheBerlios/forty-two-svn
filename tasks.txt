@@ -35,7 +35,7 @@ Docs for:
  !net - undeadpenguin
  // Any other daemons you guys feel like "porting"
 
-Make installer prompt you
+Make installer prompt you // seth
 
 !Get logging working - undeadpenguin
 
