@@ -6,10 +6,10 @@
 
 !rc - undeadpenguin // I need some help with parsing the XML... =/
 #rc.conf - undeadpenguin // Basic rc.conf (XML) DONE
-!rc.multi - undeadpenguin
+!rc.multi - undeadpenguin // Done for the most part... I still need to parse the XML, though...
 !rc.shutdown  seth // i will give it a try!
 !rc.single - seth
-!inittab - undeadpenguin
+#inittab - undeadpenguin // DONE
 rc.d/crond
 rc.d/inetd
 rc.d/net

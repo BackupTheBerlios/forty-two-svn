@@ -6,8 +6,10 @@
 #
 
 #
-# Version 0.01
-# Last change: backup added (line 135)
+# Version 0.08 - Just XML parsing left
+# Last change: removed backup - added it to rc.multi \
+#		Added \n to some print statements \
+#		Got rid of daemon loading - that is taken care of by rc.multi
 #
 
 # Variables needed from /etc/rc.conf:
@@ -16,7 +18,7 @@
 # font (console font)
 # keymap
 # modules (_ARRAY_ of modules)
-# backups (_ARRAY_ of files to back up)
+#
 
 # Load the system module
 from os import system
@@ -91,6 +93,7 @@ if tmp:
 	system( "/bin/cat /var/tmp/random-seed > /dev/urandom" )
 
 # Set the clock
+print "Setting hardware clock...\n"
 tmp = path.exists( "/etc/adjtime" )
 if tmp:
 	break
@@ -104,23 +107,14 @@ if timezone:
 
 system( "/sbin/hwclock --hctosys" )
 
-#
-# Remove this eventually
-# Have it set in rc.conf so they can pick they're system logger
-# Then a /etc/rc.d script to start it
-#
-# Start log daemons
-system( "/usr/sbin/sysklogd" )
-system( "/usr/sbin/klogd -c 4" )
-
 # Load console font (OPTIONAL)
 if font:
-	print "Setting console font to:",font
+	print "Setting console font to:",font,"\n"
 	tmp = "/usr/bin/setfont",font
 	system( tmp )
 
 if keymap:
-	print "Setting keymap to:",font
+	print "Setting keymap to:",keymap,"\n"
 	tmp = "/bin/loadkeys -q",keymap
 	system( tmp )
 
@@ -131,11 +125,6 @@ system( "/usr/bin/setterm -blank 15" )
 for module in modules:
 	print "Loading module:",module
 	tmp = "/sbin/depmod",module
-	system( tmp )
-
-for file in backups:
-	print "Backing up:",file
-	tmp = "cp",backup,"/var/backup/"
 	system( tmp )
 
 # End of script

@@ -1,26 +1,56 @@
-#!/bin/bash
+#!/usr/bin/python
 #
-# /etc/rc.multi: multi-user startup script
+# /etc/rc.multi - Multi-user startup script (runlevel 3)
+# Copyright 2004 Forty-two
+# For more information on Forty-two see http://forty-two.berlios.de
+# 
+# Needed from rc.conf:
+# services - Array of daemons
 #
 
-# Load configuration
-. /etc/rc.conf
+# Load system module
+from os import system
+
+# Load path module
+from os import path
+
+#
+# Here we would read rc.conf
+# I don't know how to do that so we're skipping it for now
+#
+
 
 # Start services
-if [ "${SERVICES[*]}" ]; then
-	echo -n "starting services:"
-	for service in ${SERVICES[@]}; do
-		echo -n " $service"
-		/etc/rc.d/$service start &> /tmp/rc.$$ || echo -n "[ERROR]"
-		/usr/bin/logger -t $service -f /tmp/rc.$$
-		/bin/rm -f /tmp/rc.$$
-	done
-	echo
-fi
+if services != "":
+	for daemon in services:
+		print "Starting",daemon+"\n"
+		# Make sure there's a script for it
+		tmplocation = "/etc/rc.d/",daemon
+		location = path.exists( tmplocation )
+		if location:
+			# Start the daemon
+			tmp = "/etc/rc.d/"+daemon,"start &> /tmp/rc.$$ || echo -n [\"ERROR\"]"
+			system( tmp )
+			# Log it and clean up
+			tmp = "/usr/bin/logger -t",daemon,"-f /tmp/rc.$$"
+			system( tmp )
+			system( "/bin/rm -f /tmp/rc.$$" )
 
-# Run local startup script
-if [ -x /etc/rc.local ]; then
-	/etc/rc.local
-fi
+# Run the user's local script (if it exists)
+tmp = path.exists( "/etc/rc.local" )
+if tmp:
+	system( "bash /etc/rc.local" )
+
+# Backup files if necessary
+if backup == "yes":
+	if backups != "":
+		for file in backups:
+			print "Backing up:",file,"\n"
+			tmp = "cp",backup,"/var/backup"
+			system( tmp )
+	else:
+		print "Error: No backups in rc.conf!\n"
+
 
 # End of file
+#
