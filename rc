@@ -7,9 +7,8 @@
 
 #
 # Version 0.08 - Just XML parsing left
-# Last change: removed backup - added it to rc.multi \
-#		Added \n to some print statements \
-#		Got rid of daemon loading - that is taken care of by rc.multi
+# Last change: Added bold green DONE
+#	       Checked for errors first on a few things
 #
 
 # Variables needed from /etc/rc.conf:
@@ -29,7 +28,8 @@ from os import path
 # Load the exit module
 from sys import exit
 
-print "Forty-two is booting the system...\n"
+# Print "Forty-two is booting the system" in green
+print "\033[0;32;40mForty-two is booting the system...\033[0m\n"
 
 # Here we would normally load rc.conf
 # Since we don't have an rc.conf I'm skipping it
@@ -38,11 +38,15 @@ print "Forty-two is booting the system...\n"
 # I would have started pts, but I don't know what daemon to start...
 # We will use PTS eventually.
 
+print "Starting Devfsd... "
 system( "/sbin/devfsd /dev" )
+print "\033[1;32;40mDONE\033[0m\n" # DONE in green
 
 # Activate swap partition
 
+print "Activating swap... "
 system( "/sbin/swapon -a" )
+print "\033[1;32;40mDONE\033[0m\n"
 
 # Mount root (/) read-only
 system( "/bin/mount -n -o remount,ro /" )
@@ -66,16 +70,14 @@ if tmp > 1: # If the filesystem is bad
 	exit() # Kill the script
 
 # Mount filesystems
+print "Mounting filesystems... "
 system( "/bin/mount -n -o remount,rw /" )
 system( "/bin/rm -f /etc/mtab*" )
 system( "/bin/mount -a -O no_netdev" )
+print "\033[1;32;40mDONE\033[0m\n"
 
 # Clean up miscellaneous files
-
-# I don't know what this does so I'm not including it yet
-# When the time comes I'll uncomment it
-# system( "/var/run/utmp" )
-
+system( "/var/run/utmp" )
 system( "/bin/rm -rf /forcefsck /fastboot /etc/nologin /etc/shutdownpid /var/run/*.pid /var/lock/* /tmp/* &> /dev/null" )
 
 # Set kernel variables
@@ -85,11 +87,12 @@ system( "/sbin/sysctl -p > /dev/null" )
 system( "/sbin/ldconfig" )
 
 # Configure hostname
-if hostname:
-	print "Setting hostname to",hostname,"\n"
+if hostname != "":
+	print "Setting hostname to",hostname+"... "
 	#Set the hostname
 	tmp = "/bin/hostname",hostname
 	system( tmp )
+	print "\033[1;32;40mDONE\033[0m\n"
 
 # Load random seed
 # Returns true if /var/tmp/random-seed exists
@@ -98,7 +101,7 @@ if tmp:
 	system( "/bin/cat /var/tmp/random-seed > /dev/urandom" )
 
 # Set the clock
-print "Setting hardware clock...\n"
+print "Setting hardware clock... "
 tmp = path.exists( "/etc/adjtime" )
 if tmp:
 	break
@@ -106,31 +109,36 @@ else:
 	system( "/bin/echo \"0.0 0 0.0\" > /etc/adjtime" )
 
 # And set the timezone ;)
-if timezone:
+if timezone != "":
 	tmp = "/bin/ln -sf /usr/share/zoneinfo/" + timezone
 	system( tmp )
 
 system( "/sbin/hwclock --hctosys" )
+print "\033[1;32;40mDONE\033[0m\n"
 
 # Load console font (OPTIONAL)
-if font:
-	print "Setting console font to:",font,"\n"
+if font != "":
+	print "Setting console font to:",font+"... "
 	tmp = "/usr/bin/setfont",font
 	system( tmp )
+	print "\033[1;32;40mDONE\033[0m\n"
 
-if keymap:
-	print "Setting keymap to:",keymap,"\n"
+if keymap != "":
+	print "Setting keymap to:",keymap+"... "
 	tmp = "/bin/loadkeys -q",keymap
 	system( tmp )
+	print "\033[1;32;40mDONE\033[0m\n"
 
 # After 15 minutes idle, blank the screen
 system( "/usr/bin/setterm -blank 15" )
 
 # Load modules
-for module in modules:
-	print "Loading module:",module
-	tmp = "/sbin/depmod",module
-	system( tmp )
+if modules[0] != "":
+	for module in modules:
+		print "Loading module:",module+"... "
+		tmp = "/sbin/modprobe",module
+		system( tmp )
+		print "\033[1;32;40mDONE\033[0m\n"
 
 # End of script
 #
