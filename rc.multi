@@ -19,7 +19,7 @@ from os import system
 from os import path
 
 # Import variables from /etc/initconf.py
-import initconf.py
+import initconf
 
 
 # Start services

@@ -33,7 +33,7 @@ if initconf.daemons[0] != "":
 		system( tmp )
 		tmp = "/usr/bin/logger -t",daemon,"-f /tmp/rc.$$"
 		system( tmp )
-		system( /bin/rm -f /tmp/rc.$$ )
+		system( "/bin/rm -f /tmp/rc.$$" )
 		print "\033[1;32;40mDONE\033[0m\n"
 
 # Terminate all processes

@@ -102,9 +102,7 @@ if tmp:
 # Set the clock
 print "Setting hardware clock... "
 tmp = path.exists( "/etc/adjtime" )
-if tmp:
-	break
-else:
+if ! tmp:
 	system( "/bin/echo \"0.0 0 0.0\" > /etc/adjtime" )
 
 # And set the timezone ;)
