@@ -4,7 +4,7 @@
 # Copyright 2004 Forty-two <http://forty-two.berlios.de>
 # Released under a BSD license
 # 
-# Version 0.1 - Should be able to boot :)
+# Version 0.12 - Should be able to boot :)
 #
 # Needed from /etc/initconf.py:
 # services - Array of daemons
@@ -31,7 +31,7 @@ if initconf.daemons != "":
 		location = path.exists( tmplocation )
 		if location:
 			# Start the daemon
-			tmp = "/etc/rc.d/"+daemon,"start &> /tmp/rc.$$ || echo -n [\"ERROR\"]"
+			tmp = "/etc/rc.d/"+daemon+" start &> /tmp/rc.$$ || echo -n [\"ERROR\"]"
 			system( tmp )
 			# Log it and clean up
 			tmp = "/usr/bin/logger -t",daemon,"-f /tmp/rc.$$"

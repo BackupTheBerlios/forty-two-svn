@@ -6,8 +6,8 @@
 #
 
 #
-# Version 0.01 - Should be able to boot with it now :)
-# Last change: Edited it for new initconf.py variables.
+# Version 0.012 - Should be able to boot with it now :)
+# Last change: changed line 92 from , to +
 #
 
 # Variables needed from /etc/initconf.py:
@@ -89,7 +89,7 @@ system( "/sbin/ldconfig" )
 if initconf.hostname != "":
 	print "Setting hostname to",initconf.hostname+"... "
 	#Set the hostname
-	tmp = "/bin/hostname",initconf.hostname
+	tmp = "/bin/hostname "+initconf.hostname
 	system( tmp )
 	print "\033[1;32;40mDONE\033[0m\n"
 
