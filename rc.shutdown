@@ -5,7 +5,7 @@
 # Released under a BSD licence
 # coded by sethgeekx86
 #
-# Version 0.12c - Should work now =o)
+# Version 0.13 - Should work now =o)
 #
 
 # Load python system module
@@ -64,7 +64,12 @@ system ( "/bin/mount -n -o remount,ro /" )
 runlevel = system( "/bin/echo $RUNLEVEL" )
 if runlevel == 0:
  system( "/sbin/poweroff -d -f -i" )
+
+elif runlevel == 6:
+ system( "/sbin/reboot -d -f -i" )
+ 
 else:
  system( "/sbin/reboot -d -f -i" )
 
-# End of script!
+# End of file
+#
