@@ -1,0 +1,33 @@
+#!/usr/bin/python
+#
+# Example daemon start/stop/restart script
+# DO NOT put this daemon in initconf.py!
+#
+
+# Import system
+# This allows you to send command to the system
+from os import system
+
+# Import argv
+# This array contains all arguments passed to the script
+from sys import argv
+
+# If the argument passed is start
+if argv[1] == "start":
+	# Start the daemon
+	system( "/path/to/daemon arguments -options" )
+
+# If the argument passed is stop
+elif argv[1] == "stop":
+	# Stop the daemon
+	system( "killall -q /path/to/daemon" )
+
+# If the argument is restart
+elif argv[1] == "restart":
+	# Stop the daemon
+	system( "killall -q /path/to/daemon" )
+	# Start the daemon
+	system( "/path/to/daemon arguments -options" )
+
+# End of file
+#
