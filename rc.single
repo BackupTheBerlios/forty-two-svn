@@ -14,21 +14,21 @@ from os import system
 # Load configuration from initconf.py
 import initconf
 
-prelevel = system( "/bin/echo $PRELEVEL" )
+PRELEVEL= system( "/bin/echo $PRELEVEL" )
 N = system( "/bin/echo $N" )
-runlevel = system( "/bin/echo $RUNLEVEL" )
+RUNLEVEL = system( "/bin/echo $RUNLEVEL" )
 
-if prelevel == 2:
+if PRELEVEL == 2:
 	if initconf.daemons[0] != "":
-		print "\x1b[1;37m>>\x1b[0m Starting daemons:"
+		print "\x1b[1;37m>>\x1b[0m Stopping daemons:"
 		for daemon in initconf.daemons:
-			print "\x1b[1;36m>>>\x1b[0m Starting",daemon
+			print "\x1b[1;36m>>>\x1b[0m Stopping",daemon
 			tmp = "/etc/rc.d/"+daemon+" stop"
 			system( tmp )
 		print "\x1b[1;32mDONE\x1b[0m\n"
 		
 # If $PRELEVEL equals $N
-if prelevel == N: 
+if PRELEVEL == N: 
 	# Terminate all processes
 	system( "/sbin/killall5 -15 &> /dev/null" )
 	system( "/usr/bin/sleep 5" )
@@ -38,7 +38,7 @@ if prelevel == N:
 	system( "/sbin/devfsd /dev" )
 
 # Enter single-user mode , if runlevel is = to 1
-if runlevel == 1:
+if RUNLEVEL == 1:
 	system( "exec /sbin/init -t1 S" )
 else:
 	print "\x1b[1;31mERROR: Could not determine runlevel!\x1b[0m\n"
