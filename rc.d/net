@@ -8,11 +8,7 @@
 #
 
 # Import initconf.py variables
-from initconf import HOSTNAME,INTERFACES
-
-for interface in INTERACES:
-	# Get interfaces to be loaded from initconf.py
-	from initconf import interface
+from initconf import *
 
 # Import system and path modules
 from os import system,path
