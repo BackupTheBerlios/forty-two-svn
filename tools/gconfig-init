@@ -88,6 +88,8 @@ class MainWindow:
 			self.main_notebook.set_current_page( 3 )
 		elif data == "Services":
 			self.main_notebook.set_current_page( 4 )
+		elif data == "Finish":
+			self.main_notebook.set_current_page( 5 )
 
 	# Called when 'Open' is clicked
 	def open_file( self, widget, data ):
@@ -195,6 +197,21 @@ class MainWindow:
 		self.services_rm_combo.entry.set_text( "" )
 		self.DAEMONS.remove( service_name )
 		self.services_rm_combo.set_popdown_strings( self.DAEMONS )
+	
+	# Writes all the information to the disc
+	def write_info( self, widget ):
+
+		# Get some vars
+		self.TIMEZONE = self.basic_set_tzone_entry.get_text()
+		self.FONT = self.basic_set_font_entry.get_text()
+		self.KEYMAP = self.basic_set_kmap_entry.get_text()
+
+		#############################
+		# CHANGE ME!!!              #
+		# PUT IN TRY STATEMENT HERE #
+		#############################
+		self.initconf = open( "/home/kyle/devel/pynux/forty-two/initconf.py", "w" )
+		
 
 	# Creates the notebook
 	def notebook_create( self ):
@@ -498,6 +515,7 @@ class MainWindow:
 		self.services_help = gtk.Button( "Help", gtk.STOCK_HELP )
 		self.services_help.connect( "clicked", self.help, "Services" )
 		self.services_forward = gtk.Button( "Forward", gtk.STOCK_GO_FORWARD )
+		self.services_forward.connect( "clicked", self.move_forward, "Finish" )
 
 		# Add things to their appropriate HBoxes
 		self.services_parallel_hbox.pack_start( self.services_parallel_yes, gtk.FALSE, gtk.FALSE, 5 )
@@ -547,6 +565,37 @@ class MainWindow:
 		############################
 		
 		# Create stuff for 'Finish'
+		self.finish_vbox = gtk.VBox( gtk.FALSE, 10 )
+		self.finish_label = gtk.Label( "Finish" )
+		self.finish_image = gtk.Image()
+		self.finish_image.set_from_file( "imgs/gconfig-init.png" )
+		self.finish_body = gtk.Label( "You may now hit 'OK' to save all changes to your disk. To cancel this, press 'Cancel.'" )
+		self.finish_body.set_line_wrap( gtk.TRUE )
+		self.finish_hbox = gtk.HBox( gtk.FALSE, 5 )
+		self.finish_cancel = gtk.Button( "Cancel", gtk.STOCK_CANCEL )
+		self.finish_cancel.connect( "clicked", self.delete_event, "Hey..." )
+		self.finish_ok = gtk.Button( "OK", gtk.STOCK_OK )
+		
+		# Add stuff to the hbox
+		self.finish_hbox.pack_start( self.finish_cancel, gtk.FALSE, gtk.FALSE, 5 )
+		self.finish_hbox.pack_end( self.finish_ok, gtk.FALSE, gtk.FALSE, 5 )
+
+		# Add everything to the vbox
+		self.finish_vbox.pack_start( self.finish_image, gtk.FALSE, gtk.FALSE, 10 )
+		self.finish_vbox.pack_start( self.finish_body, gtk.FALSE, gtk.FALSE, 10 )
+		self.finish_vbox.pack_start( self.finish_hbox, gtk.FALSE, gtk.FALSE, 10 )
+
+		# Add it to the notebook
+		self.main_notebook.insert_page( self.finish_vbox, self.finish_label, 5 )
+
+		# Show everything
+		self.finish_label.show()
+		self.finish_image.show()
+		self.finish_body.show()
+		self.finish_cancel.show()
+		self.finish_ok.show()
+		self.finish_hbox.show()
+		self.finish_vbox.show()
 
 	def __init__( self ):
 
