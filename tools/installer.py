@@ -9,16 +9,26 @@ from os import system
 # Import the path module
 from os import path
 
+# Import the path module
+from sys import exit 
+
 # Prompt 'em
 print "\x1b[1;31mYOU ARE GOING TO BE MOVING SYSTEM FILES\x1b[0m"
 print "\x1b[1;31mTHIS COULD DESTROY YOUR SYSTEM\x1b[0m"
-print "Installation will proceed in 10 seconds."
-seconds = 10
-while seconds >= 1:
-	print seconds,"seconds..."
-	tmp = "/usr/bin/sleep 1s"
-	system( tmp )
-	seconds = seconds - 1
+Print " are you sure you want to install forty-two , type yes or no"
+logq = str(raw_input(' yes or no : '))
+
+if logq == "yes":
+	print " install starting..."
+	
+elif logq == "no":
+	print " 42 has NOT been installed "
+        exit()
+	
+else:
+	print "you did not type yes or no , if you would like to install fort-two try again"
+        exit()
+
 	
 system( "/usr/bin/clear" )
 
